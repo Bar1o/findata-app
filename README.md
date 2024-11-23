@@ -1,1 +1,3 @@
-```source ./.virt/bin/activate```
+FinData-App
+
+Course project on shares data for top-5 Russian companies
