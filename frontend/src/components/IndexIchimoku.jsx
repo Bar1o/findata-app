@@ -23,15 +23,6 @@ const DataForChart = async ({ figi }) => {
 const IndexIchimoku = (props) => {
   const { figi } = props;
 
-  // const data = rawData.map((item) => ({
-  //   time: Math.floor(new Date(item.time).getTime() / 1000),
-  //   open: item.open,
-  //   high: item.high,
-  //   low: item.low,
-  //   close: item.close,
-  // }));
-  // console.log(data);
-
   const chartContainerRef = useRef(null);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,16 +37,6 @@ const IndexIchimoku = (props) => {
     timeScale: {
       timeVisible: true, // Enables time labels on the x-axis
       secondsVisible: false, // Hides seconds in the labels
-      tickMarkFormatter: (time) => {
-        const date = new Date(time * 1000); // Convert UNIX timestamp back to JavaScript Date
-        // Format: 'MM/DD/YYYY HH:MM'
-        const formattedDate = `${date.getDate().toString().padStart(2, "0")}`;
-        const formattedTime = `${date
-          .getHours()
-          .toString()
-          .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-        return `${formattedDate} ${formattedTime}`;
-      },
       barSpacing: 30, // Adjust spacing to prevent label overlap
       minBarSpacing: 10,
       rightOffset: 10,
