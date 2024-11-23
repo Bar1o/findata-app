@@ -31,17 +31,17 @@ class Figi(BaseModel):
 
 
 class IchimokuCandle(BaseModel):
-    Time: str
-    Open: float
-    Close: float
-    Max: float
-    Min: float
-    Volume: int
-    Tenkan_sen: float = None
-    Kijun_sen: float = None
-    Senkou_Span_A: float = None
-    Senkou_Span_B: float = None
-    Chikou_Span: float = None
+    time: str
+    open: float
+    close: float
+    high: float
+    low: float
+    volume: int
+    tenkan_sen: float = None
+    kijun_sen: float = None
+    senkou_span_A: float = None
+    senkou_span_B: float = None
+    chikou_span: float = None
 
 
 all_figi_by_ticker: dict[str:str] = {

@@ -10,8 +10,8 @@ function App() {
       <section className="min-h-screen flex flex-col">
         <Header />
         {/* <HomePage /> */}
-        {/* <IndexIchimoku figi="BBG004730N88" /> */}
-        <ChartComponent2 />
+        <IndexIchimoku figi="BBG004730N88" />
+        {/* <ChartComponent2 /> */}
       </section>
       <div className="flex items-center justify-center gap-4">
         <p className="font-light text-grey-400 text-sm">
