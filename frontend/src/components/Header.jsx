@@ -8,7 +8,7 @@ export default function Header() {
       </h1>
       <button className="flex items-center gap-2">
         <p>Search</p>
-        <i class="fa-solid fa-magnifying-glass"></i>
+        <i className="fa-solid fa-magnifying-glass"></i>
       </button>
     </header>
   );

@@ -45,6 +45,8 @@ const IndexIchimoku = (props) => {
     },
   };
 
+  ///////////////////////////////////////////////////////////////////////////////////////////
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,6 +85,8 @@ const IndexIchimoku = (props) => {
     };
     fetchData();
   }, [figi]);
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
     const handleResize = () => {
@@ -172,14 +176,17 @@ const IndexIchimoku = (props) => {
     //     }))
     // );
 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
     const colorsSet = {
       yellow: "#FFEC28",
       orange: "#FFA500",
       teal: "#26A6996C",
       tealLight: "#21A49700",
-      orangeRed: "#EF535047",
-      orangeRedLight: "#EF535026",
+      orangeRed: "#EF535040",
+      orangeRedLight: "#EF535000",
       green: "#00645047",
+      purple: "#800080",
     };
 
     const maxSenkouSpanB = Math.max(...chartData.map((item) => item.senkouSpanB));
@@ -191,25 +198,26 @@ const IndexIchimoku = (props) => {
           type: "price",
           price: maxSenkouSpanB,
         },
-        topLineColor: colorsSet.yellow,
-        topFillColor1: colorsSet.teal,
-        topFillColor2: colorsSet.tealLight,
+        topLineColor: colorsSet.purple,
+        topFillColor1: colorsSet.orangeRed,
+        topFillColor2: colorsSet.orangeRedLight,
         bottomLineColor: colorsSet.yellow,
-        bottomFillColor1: colorsSet.tealLight,
-        bottomFillColor2: colorsSet.teal,
+        bottomFillColor1: colorsSet.orangeRedLight,
+        bottomFillColor2: colorsSet.orangeRed,
+        lineVisible: false,
       });
 
       baselineSeries.setData(
         chartData
-          .filter((item) => item.senkouSpanA !== null)
+          .filter((item) => item.senkouSpanA !== null && item.senkouSpanB !== null)
           .map((item) => ({
             time: item.time,
-            value: item.senkouSpanA,
-            secondaryValue: item.senkouSpanB,
+            value: item.senkouSpanA < item.senkouSpanB ? item.senkouSpanA : item.senkouSpanB,
           }))
       );
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////
     const buySignals = [];
     const sellSignals = [];
 
@@ -249,6 +257,7 @@ const IndexIchimoku = (props) => {
     markers.sort((a, b) => a.time - b.time);
 
     candlestickSeries.setMarkers(markers);
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
     window.addEventListener("resize", handleResize);
     return () => {

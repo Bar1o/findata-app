@@ -1,12 +1,17 @@
 import os
 import json
 from datetime import timedelta
+from fastapi import HTTPException
 from pandas import DataFrame
 from tinkoff.invest import CandleInterval, Client
 from tinkoff.invest.utils import now
 from dotenv import load_dotenv
 from modules.modules import Quotation, factor, Window, Candle
 import pandas as pd
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -50,10 +55,11 @@ def export(df: DataFrame) -> list:
 
 
 def get_all_candles_by_figi(figi: str) -> list:
+    all_candles.clear()
     with Client(TOKEN) as client:
         for candle in client.get_all_candles(
             figi=figi,
-            from_=now() - timedelta(days=90 * 2),
+            from_=now() - timedelta(days=90 * 4),
             interval=CandleInterval.CANDLE_INTERVAL_DAY,
         ):
             all_candles.append(make_candle(candle))
@@ -63,7 +69,33 @@ def get_all_candles_by_figi(figi: str) -> list:
     return export(df)
 
 
-print(get_all_candles_by_figi("BBG004730N88"))
+def get_all_candles_by_period(figi: str, period: str) -> list:
+    try:
+        all_candles.clear()
+        timedelta_type = {"D": timedelta(days=1), "W": timedelta(days=7), "M": timedelta(days=30), "Y": timedelta(weeks=52)}
+        interval_type = {
+            "D": CandleInterval.CANDLE_INTERVAL_HOUR,
+            "W": CandleInterval.CANDLE_INTERVAL_HOUR,
+            "M": CandleInterval.CANDLE_INTERVAL_DAY,
+            "Y": CandleInterval.CANDLE_INTERVAL_MONTH,
+        }
+        with Client(TOKEN) as client:
+            for candle in client.get_all_candles(
+                figi=figi,
+                from_=now() - timedelta_type[period],
+                interval=interval_type[period],
+            ):
+                all_candles.append(make_candle(candle))
+        df = normalize_candles(all_candles)
+        df = get_ichimoku(df)
+
+        return export(df)
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise HTTPException(status_code=500, detail="get_all_candles_by_period error")
+
+
+print(get_all_candles_by_period("BBG004730N88", "D"))
 
 # if __name__ == "__main__":
 #     main()

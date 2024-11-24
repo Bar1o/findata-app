@@ -2,7 +2,7 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from all_candles import get_all_candles_by_figi
+from all_candles import get_all_candles_by_figi, get_all_candles_by_period
 from modules.modules import Figi, all_figi_by_ticker, Candle, IchimokuCandle
 from typing import List
 
@@ -36,6 +36,13 @@ async def get_data_for_ichimoku(figi: str) -> dict:
     logger.debug(f"Fetching all candles by figi: {figi}")
 
     return {"data": get_all_candles_by_figi(figi)}
+
+
+@app.get("/index_ichimoku/{figi}/{period}", response_model=dict)
+async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict:
+    logger.debug(f"Fetching all candles by figi: {figi} for period: {period}")
+
+    return {"data": get_all_candles_by_period(figi, period)}
 
 
 app.add_middleware(

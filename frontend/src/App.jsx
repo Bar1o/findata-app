@@ -2,7 +2,7 @@ import { useState } from "react";
 import HomePage from "./components/HomePage";
 import Header from "./components/Header";
 import IndexIchimoku from "./components/IndexIchimoku";
-import { ChartComponent, ChartComponent2 } from "./components/ChartComponent";
+import PeriodButtons from "./components/PeriodButtons";
 
 function App() {
   return (
@@ -10,8 +10,9 @@ function App() {
       <section className="min-h-screen flex flex-col">
         <Header />
         {/* <HomePage /> */}
-        <IndexIchimoku figi="BBG004730N88" />
-        {/* <ChartComponent2 /> */}
+        {/* <IndexIchimoku figi="BBG004730N88" /> */}
+
+        <PeriodButtons figi="BBG004730N88" />
       </section>
       <div className="flex items-center justify-center gap-4">
         <p className="font-light text-grey-400 text-sm">
