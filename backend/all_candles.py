@@ -72,12 +72,21 @@ def get_all_candles_by_figi(figi: str) -> list:
 def get_all_candles_by_period(figi: str, period: str) -> list:
     try:
         all_candles.clear()
-        timedelta_type = {"D": timedelta(days=1), "W": timedelta(days=7), "M": timedelta(days=30), "Y": timedelta(weeks=52)}
+        timedelta_type = {
+            "D": timedelta(days=1),
+            "3D": timedelta(days=3),
+            "W": timedelta(days=7),
+            "M": timedelta(days=30),
+            "3M": timedelta(days=90),
+            "Y": timedelta(weeks=52),
+        }
         interval_type = {
             "D": CandleInterval.CANDLE_INTERVAL_HOUR,
+            "3D": CandleInterval.CANDLE_INTERVAL_HOUR,
             "W": CandleInterval.CANDLE_INTERVAL_HOUR,
             "M": CandleInterval.CANDLE_INTERVAL_DAY,
-            "Y": CandleInterval.CANDLE_INTERVAL_MONTH,
+            "3M": CandleInterval.CANDLE_INTERVAL_DAY,
+            "Y": CandleInterval.CANDLE_INTERVAL_DAY,
         }
         with Client(TOKEN) as client:
             for candle in client.get_all_candles(
@@ -88,6 +97,7 @@ def get_all_candles_by_period(figi: str, period: str) -> list:
                 all_candles.append(make_candle(candle))
         df = normalize_candles(all_candles)
         df = get_ichimoku(df)
+        logger.info("get_all_candles_by_period: exported the data")
 
         return export(df)
     except Exception as e:

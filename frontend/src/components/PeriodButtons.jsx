@@ -1,35 +1,50 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
+import PropTypes from "prop-types";
 import { Button } from "@gravity-ui/uikit";
 import { FetchDataByPeriod, TransformData } from "./FetchData";
 
-const PeriodButtons = ({ figi, chartType }) => {
-  function handleClickedPeriod(period) {
-    console.log("Data for period", period);
-    const rawData = FetchDataByPeriod({ figi, period });
-    const data = TransformData(rawData);
-  }
+const PeriodButtons = ({ figi, setChartData }) => {
+  const [activePeriod, setActivePeriod] = useState("D");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const handleClickedPeriod = useCallback(
+    async (period) => {
+      setActivePeriod(period);
+      setLoading(true);
+      setError(null);
+
+      try {
+        const rawData = await FetchDataByPeriod({ figi, period });
+        const transformedData = TransformData(rawData);
+        setChartData(transformedData);
+      } catch (err) {
+        console.error(`Error fetching data for period "${period}":`, err);
+        setError("Failed to fetch data. Please try again.");
+        setChartData([]); // Optionally clear existing chart data on error
+      } finally {
+        setLoading(false);
+      }
+    },
+    [figi, loading, setChartData]
+  );
+
+  const periods = ["D", "3D", "W", "M", "3M", "Y"];
   return (
-    <div className="text-sm flex-1 p-2 flex flex-row gap-2 sm:gap-4 md:gap-5 ">
-      <Button view="outlined-info" size="l" width="small" onClick={() => handleClickedPeriod("D")}>
-        D
-      </Button>
-      <Button view="outlined-info" size="l" width="small" onClick={() => handleClickedPeriod("W")}>
-        W
-      </Button>
-      <Button view="outlined-info" size="l" width="small" onClick={() => handleClickedPeriod("M")}>
-        M
-      </Button>
-      <Button view="outlined-info" size="l" width="small" onClick={() => handleClickedPeriod("Y")}>
-        Y
-      </Button>
+    <div className="text-sm flex flex-row gap-2 sm:gap-4 md:gap-5 ">
+      {periods.map((period) => (
+        <Button key={period} view="outlined-info" size="l" width="small" onClick={() => handleClickedPeriod(period)}>
+          {period}
+        </Button>
+      ))}
     </div>
   );
 };
 
 PeriodButtons.propTypes = {
   figi: PropTypes.string.isRequired,
-  chartType: PropTypes.func.isRequired,
+  setChartData: PropTypes.func.isRequired,
 };
 
 export default PeriodButtons;
