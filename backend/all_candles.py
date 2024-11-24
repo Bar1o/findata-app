@@ -36,11 +36,11 @@ def normalize_candles(all_candles: list) -> DataFrame:
 
 
 def get_ichimoku(df: DataFrame, wi: Window = Window(small=9, medium=26, large=52)) -> DataFrame:
-    df["tenkan-sen"] = (df["high"].rolling(window=wi.small).max() + df["low"].rolling(window=wi.small).min()) / 2
-    df["kijun-sen"] = (df["high"].rolling(window=wi.medium).max() + df["low"].rolling(window=wi.medium).min()) / 2
-    df["senkou span A"] = ((df["tenkan-sen"] + df["kijun-sen"]) / 2).shift(wi.medium)
-    df["senkou span B"] = ((df["high"].rolling(window=wi.large).max() + df["low"].rolling(window=wi.large).min()) / 2).shift(wi.medium)
-    df["chikou span"] = df["close"].shift(-wi.medium)
+    df["tenkanSen"] = (df["high"].rolling(window=wi.small).max() + df["low"].rolling(window=wi.small).min()) / 2
+    df["kijunSen"] = (df["high"].rolling(window=wi.medium).max() + df["low"].rolling(window=wi.medium).min()) / 2
+    df["senkouSpanA"] = ((df["tenkanSen"] + df["kijunSen"]) / 2).shift(wi.medium)
+    df["senkouSpanB"] = ((df["high"].rolling(window=wi.large).max() + df["low"].rolling(window=wi.large).min()) / 2).shift(wi.medium)
+    df["chikouSpan"] = df["close"].shift(-wi.medium)
     return df
 
 
@@ -53,8 +53,8 @@ def get_all_candles_by_figi(figi: str) -> list:
     with Client(TOKEN) as client:
         for candle in client.get_all_candles(
             figi=figi,
-            from_=now() - timedelta(days=3),
-            interval=CandleInterval.CANDLE_INTERVAL_HOUR,
+            from_=now() - timedelta(days=90 * 2),
+            interval=CandleInterval.CANDLE_INTERVAL_DAY,
         ):
             all_candles.append(make_candle(candle))
     df = normalize_candles(all_candles)

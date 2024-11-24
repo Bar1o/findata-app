@@ -3,13 +3,9 @@ import { createChart } from "lightweight-charts";
 
 const DataForChart = async ({ figi }) => {
   try {
-    const response = await fetch(
-      `http://localhost:8000/index_ichimoku/${figi}`
-    );
+    const response = await fetch(`http://localhost:8000/index_ichimoku/${figi}`);
     if (!response.ok) {
-      throw new Error(
-        `Error fetching data: ${response.status} ${response.statusText}`
-      );
+      throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
     console.log(data);
@@ -42,20 +38,12 @@ const IndexIchimoku = (props) => {
       rightOffset: 10,
       barSpacingIncrement: 5, // Smooth resizing
     },
+    series: {
+      type: "Candlestick",
+      data: chartData,
+      spanGaps: false,
+    },
   };
-
-  // const chartData = [
-  //   { open: 10, high: 10.63, low: 9.49, close: 9.55, time: 1642427876 },
-  //   { open: 9.55, high: 10.3, low: 9.42, close: 9.94, time: 1642514276 },
-  //   { open: 9.94, high: 10.17, low: 9.92, close: 9.78, time: 1642600676 },
-  //   { open: 9.78, high: 10.59, low: 9.18, close: 9.51, time: 1642687076 },
-  //   { open: 9.51, high: 10.46, low: 9.1, close: 10.17, time: 1642773476 },
-  //   { open: 10.17, high: 10.96, low: 10.16, close: 10.47, time: 1642859876 },
-  //   { open: 10.47, high: 11.39, low: 10.4, close: 10.81, time: 1642946276 },
-  //   { open: 10.81, high: 11.6, low: 10.3, close: 10.75, time: 1643032676 },
-  //   { open: 10.75, high: 11.6, low: 10.49, close: 10.93, time: 1643119076 },
-  //   { open: 10.93, high: 11.53, low: 10.76, close: 10.96, time: 1643205476 },
-  // ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,24 +55,23 @@ const IndexIchimoku = (props) => {
         console.log("Raw data: ", rawData);
 
         let transformed = rawData.data.map((item) => ({
-          time: Math.floor(new Date(item.time).getTime() / 1000), // Convert to UNIX timestamp in seconds
+          time: Math.floor(new Date(item.time + "Z").getTime() / 1000),
           open: item.open,
           high: item.high,
           low: item.low,
           close: item.close,
+          tenkanSen: item.tenkanSen,
+          kijunSen: item.kijunSen,
+          chikouSpan: item.chikouSpan,
+          senkouSpanA: item.senkouSpanA,
+          senkouSpanB: item.senkouSpanB,
         }));
         transformed.sort((a, b) => a.time - b.time);
         console.log("Transformed data: ", transformed);
 
-        const uniqueTransformed = transformed.filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.time === item.time)
-        );
+        const uniqueTransformed = transformed.filter((item, index, self) => index === self.findIndex((t) => t.time === item.time));
 
-        console.log(
-          "Transformed Data After Removing Duplicates:",
-          uniqueTransformed
-        );
+        console.log("Transformed Data After Removing Duplicates:", uniqueTransformed);
 
         setChartData(uniqueTransformed);
       } catch (err) {
@@ -105,6 +92,9 @@ const IndexIchimoku = (props) => {
     const chart = createChart(chartContainerRef.current, chartOptions);
     chart.timeScale().fitContent();
 
+    // upColor: "#26a69a",
+    // downColor: "#ef5350",
+
     const candlestickSeries = chart.addCandlestickSeries({
       upColor: "#26a69a",
       downColor: "#ef5350",
@@ -113,6 +103,152 @@ const IndexIchimoku = (props) => {
       wickDownColor: "#ef5350",
     });
     candlestickSeries.setData(chartData);
+
+    // Lines for indexes
+    const tenkanSenLineSeries = chart.addLineSeries({ color: "#FF1931" });
+    tenkanSenLineSeries.setData(
+      chartData
+        .filter((item) => item.tenkanSen !== null)
+        .map((item) => ({
+          time: item.time,
+          value: item.tenkanSen,
+        }))
+    );
+
+    const kijunSenLineSeries = chart.addLineSeries({ color: "#2962FF" });
+    kijunSenLineSeries.setData(
+      chartData
+        .filter((item) => item.kijunSen !== null)
+        .map((item) => ({
+          time: item.time,
+          value: item.kijunSen,
+        }))
+    );
+
+    const senkouSpanALineSeries = chart.addLineSeries({ color: "#FFEC28" });
+    senkouSpanALineSeries.setData(
+      chartData
+        .filter((item) => item.senkouSpanA !== null)
+        .map((item) => ({
+          time: item.time,
+          value: item.senkouSpanA,
+        }))
+    );
+
+    const senkouSpanBLineSeries = chart.addLineSeries({ color: "#800080" });
+    senkouSpanBLineSeries.setData(
+      chartData
+        .filter((item) => item.senkouSpanB !== null)
+        .map((item) => ({
+          time: item.time,
+          value: item.senkouSpanB,
+        }))
+    );
+
+    const chikouSpanLineSeries = chart.addLineSeries({ color: "#008001" }); // green
+    chikouSpanLineSeries.setData(
+      chartData
+        .filter((item) => item.chikouSpan !== null)
+        .map((item) => ({
+          time: item.time,
+          value: item.chikouSpan,
+        }))
+    );
+
+    // const areaSeries = chart.addAreaSeries({
+    //   lineColor: "#FFEC28",
+    //   topColor: "rgba(255,257,255,0)",
+    //   bottomColor: "rgba(0,100,80,0.2)",
+    //   invertFilledArea: true,
+    // });
+    // areaSeries.setData(
+    //   chartData
+    //     .filter(
+    //       (item) => item.senkouSpanA !== null && item.senkouSpanB !== null
+    //     )
+    //     .map((item) => ({
+    //       time: item.time,
+    //       value: item.senkouSpanA < item.senkouSpanB ? item.senkouSpanA : 0,
+    //     }))
+    // );
+
+    const colorsSet = {
+      yellow: "#FFEC28",
+      orange: "#FFA500",
+      teal: "#26A6996C",
+      tealLight: "#21A49700",
+      orangeRed: "#EF535047",
+      orangeRedLight: "#EF535026",
+      green: "#00645047",
+    };
+
+    const maxSenkouSpanB = Math.max(...chartData.map((item) => item.senkouSpanB));
+    console.log("maxSenkouSpanB:", maxSenkouSpanB);
+
+    if (maxSenkouSpanB !== -Infinity) {
+      const baselineSeries = chart.addBaselineSeries({
+        baseValue: {
+          type: "price",
+          price: maxSenkouSpanB,
+        },
+        topLineColor: colorsSet.yellow,
+        topFillColor1: colorsSet.teal,
+        topFillColor2: colorsSet.tealLight,
+        bottomLineColor: colorsSet.yellow,
+        bottomFillColor1: colorsSet.tealLight,
+        bottomFillColor2: colorsSet.teal,
+      });
+
+      baselineSeries.setData(
+        chartData
+          .filter((item) => item.senkouSpanA !== null)
+          .map((item) => ({
+            time: item.time,
+            value: item.senkouSpanA,
+            secondaryValue: item.senkouSpanB,
+          }))
+      );
+    }
+
+    const buySignals = [];
+    const sellSignals = [];
+
+    for (let i = 1; i < chartData.length; ++i) {
+      if (chartData[i].tenkanSen > chartData[i].kijunSen && chartData[i - 1].tenkanSen <= chartData[i - 1].kijunSen) {
+        buySignals.push({ time: chartData[i].time, value: chartData[i].min });
+      }
+      if (chartData[i].tenkanSen < chartData[i].kijunSen && chartData[i - 1].tenkanSen >= chartData[i - 1].kijunSen) {
+        sellSignals.push({ time: chartData[i].time, value: chartData[i].max });
+      }
+    }
+
+    let markers = [];
+
+    buySignals.forEach((signal) => {
+      markers.push({
+        time: signal.time,
+        position: "belowBar",
+        color: "green",
+        shape: "arrowforUp",
+        size: 2,
+        text: "Buy",
+      });
+    });
+
+    sellSignals.forEach((signal) => {
+      markers.push({
+        time: signal.time,
+        position: "aboveBar",
+        color: "red",
+        shape: "arrowDown",
+        size: 2,
+        text: "Sell",
+      });
+    });
+
+    markers.sort((a, b) => a.time - b.time);
+
+    candlestickSeries.setMarkers(markers);
 
     window.addEventListener("resize", handleResize);
     return () => {
@@ -124,6 +260,7 @@ const IndexIchimoku = (props) => {
   return (
     <div>
       <h2>Ichimoku Index for {figi}</h2>
+      <div>{loading && <p>Loading...</p>}</div>
       <div ref={chartContainerRef} />
     </div>
   );
