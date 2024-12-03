@@ -3,7 +3,7 @@ import { createChart } from "lightweight-charts";
 
 const DataForChart = async ({ figi }) => {
   try {
-    const response = await fetch(`http://localhost:8000/index_ichimoku/${figi}`);
+    const response = await fetch(`http://localhost:3300/index_ichimoku/${figi}`);
     if (!response.ok) {
       throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
     }

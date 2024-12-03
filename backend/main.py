@@ -1,10 +1,12 @@
-# uvicorn main:app --host 0.0.0.0 --port 3001 --reload --log-level debug
+# uvicorn main:app --host 0.0.0.0 --port 3300 --reload --log-level debug
+# uvicorn main:app --host 0.0.0.0 --port 3300
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from all_candles import get_all_candles_by_figi, get_all_candles_by_period
 from modules.modules import Figi, all_figi_by_ticker, Candle, IchimokuCandle
 from typing import List
+import uvicorn
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -47,7 +49,7 @@ async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

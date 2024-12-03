@@ -4,7 +4,7 @@ import { useState } from "react";
 export const FetchDataByPeriod = async ({ figi, period }) => {
   // period is D, W, M, Y
   try {
-    const response = await fetch(`http://localhost:8000/index_ichimoku/${figi}/${period}`);
+    const response = await fetch(`http://localhost:3300/index_ichimoku/${figi}/${period}`);
     if (!response.ok) {
       throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
     }
