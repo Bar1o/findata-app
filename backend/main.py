@@ -49,7 +49,11 @@ async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],
+    allow_origins=[
+        "http://localhost:3001",  # Local development
+        "https://findata.vabarnis.ru",  # Production
+        "http://findata.vabarnis.ru",  # Optional: in case of non-SSL
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
