@@ -2,11 +2,9 @@ import React from "react";
 import { useState } from "react";
 
 export const FetchDataByPeriod = async ({ figi, period }) => {
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
   // period is D, W, M, Y
   try {
-    // const response = await fetch(`http://localhost:3300/index_ichimoku/${figi}/${period}`);
-    const response = await fetch(`/api/index_ichimoku/${figi}/${period}`);
+    const response = await fetch(`http://localhost:3300/api/index_ichimoku/${figi}/${period}`);
     if (!response.ok) {
       throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
     }

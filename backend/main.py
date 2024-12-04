@@ -33,14 +33,14 @@ async def root():
 #     return ticker_data
 
 
-@app.get("/index_ichimoku/{figi}", response_model=dict)
+@app.get("/api/index_ichimoku/{figi}", response_model=dict)
 async def get_data_for_ichimoku(figi: str) -> dict:
     logger.debug(f"Fetching all candles by figi: {figi}")
 
     return {"data": get_all_candles_by_figi(figi)}
 
 
-@app.get("/index_ichimoku/{figi}/{period}", response_model=dict)
+@app.get("/api/index_ichimoku/{figi}/{period}", response_model=dict)
 async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict:
     logger.debug(f"Fetching all candles by figi: {figi} for period: {period}")
 
