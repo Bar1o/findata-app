@@ -1,0 +1,6 @@
+# .dockerignore
+backend/__pycache__
+backend/*.pyc
+frontend/node_modules
+frontend/build
+nginx/*.log
