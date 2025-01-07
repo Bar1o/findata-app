@@ -33,11 +33,11 @@ const IndexIchimoku2 = ({ figi, data }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (!data || data.length === 0) {
-        const defaultPeriod = "D";
+        const defaultPeriod = "W";
         try {
           const rawData = await FetchDataByPeriod({ figi, period: defaultPeriod });
-          const transformedData = IchimokuData(rawData);
-          setChartData(transformedData);
+          const ichimokuData = IchimokuData(rawData);
+          setChartData(ichimokuData);
         } catch (error) {
           console.error(`Error fetching data for period "${defaultPeriod}":`, error);
         } finally {
@@ -154,6 +154,9 @@ const IndexIchimoku2 = ({ figi, data }) => {
         sellSignals.push({ time: chartData[i].time, value: chartData[i].max });
       }
     }
+
+    console.log("Buy signals are set:", buySignals);
+    console.log("Sell signals are set:", sellSignals);
 
     let markers = [];
 

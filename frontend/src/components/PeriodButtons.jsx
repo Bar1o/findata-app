@@ -7,7 +7,7 @@ import { FetchDataByPeriod, IchimokuData } from "./FetchData";
 const PeriodButtons = ({ figi, setChartData }) => {
   const periods = ["D", "3D", "W", "M", "3M", "Y"];
 
-  const [activePeriod, setActivePeriod] = useState("D");
+  const [activePeriod, setActivePeriod] = useState("W");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
