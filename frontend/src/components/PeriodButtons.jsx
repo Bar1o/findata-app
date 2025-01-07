@@ -33,7 +33,7 @@ const PeriodButtons = ({ figi, setChartData }) => {
   );
 
   return (
-    <div className="text-sm flex flex-row gap-2 sm:gap-4 md:gap-5 ">
+    <div className="text-sm flex flex-row gap-2 p-2 sm:gap-4 md:gap-5 ">
       {periods.map((period) => (
         <Button
           key={period}

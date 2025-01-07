@@ -6,11 +6,10 @@ from pandas import DataFrame
 from tinkoff.invest import CandleInterval, Client
 from tinkoff.invest.utils import now
 from dotenv import load_dotenv
-from modules.modules import Quotation, factor, Window, Candle
+from models.models import Quotation, factor, Window, Candle
 import pandas as pd
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
