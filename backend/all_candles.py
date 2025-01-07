@@ -96,26 +96,25 @@ def export_nan(df: DataFrame) -> list:
                 if col != "time" and not pd.isna(row[col]):
                     data_dict[col] = row[col]
             result.append(data_dict)
-    # return json.dumps(result, default=str)
     return result
 
 
-def calc_buy_sell_signals(df: DataFrame) -> tuple[list]:
-    buySignals = (df["tenkanSen"] > df["kijunSen"]) & (df["tenkanSen"].shift(1) <= df["kijunSen"].shift(1))
-    sellSignals = (df["tenkanSen"] < df["kijunSen"]) & (df["tenkanSen"].shift(1) >= df["kijunSen"].shift(1))
+# def calc_buy_sell_signals(df: DataFrame) -> tuple[list]:
+#     buySignals = (df["tenkanSen"] > df["kijunSen"]) & (df["tenkanSen"].shift(1) <= df["kijunSen"].shift(1))
+#     sellSignals = (df["tenkanSen"] < df["kijunSen"]) & (df["tenkanSen"].shift(1) >= df["kijunSen"].shift(1))
 
-    # series -> df -> drop index + add value -> export as list
-    bS = df.loc[buySignals, ["time", "low"]].copy()
-    bS.rename(columns={"low": "value"}, inplace=True)
-    bS["time"] = pd.to_datetime(bS["time"])
-    bS = export_nan(bS)
+#     # series -> df -> drop index + add value -> export as list
+#     bS = df.loc[buySignals, ["time", "low"]].copy()
+#     bS.rename(columns={"low": "value"}, inplace=True)
+#     bS["time"] = pd.to_datetime(bS["time"])
+#     bS = export_nan(bS)
 
-    sS = df.loc[sellSignals, ["time", "high"]].copy()
-    sS.rename(columns={"high": "value"}, inplace=True)
-    sS["time"] = pd.to_datetime(sS["time"])
-    sS = export_nan(sS)
+#     sS = df.loc[sellSignals, ["time", "high"]].copy()
+#     sS.rename(columns={"high": "value"}, inplace=True)
+#     sS["time"] = pd.to_datetime(sS["time"])
+#     sS = export_nan(sS)
 
-    return bS, sS
+#     return bS, sS
 
 
 def get_all_candles_by_figi(figi: str) -> list:
@@ -163,10 +162,8 @@ def get_all_candles_by_period(figi: str, period: str) -> list:
         df = get_ichimoku(df)
         logger.info("get_all_candles_by_period: exported the data")
 
-        bS, sS = calc_buy_sell_signals(df)
         json_data = export_nan(df)
-        main_json_data = {"data": json_data, "signals": [{"buySignals": bS}, {"sellSignals": sS}]}
-        # return export(df)
+        main_json_data = {"data": json_data}
         return main_json_data
     except Exception as e:
         logger.error(f"Error: {e}")
