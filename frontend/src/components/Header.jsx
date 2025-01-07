@@ -1,4 +1,5 @@
 import React from "react";
+import KeyRateBar from "./KeyRateBar";
 
 export default function Header() {
   return (
@@ -6,8 +7,9 @@ export default function Header() {
       <h1 className="font-medium">
         Fin<span className="text-blue-500 bold">Data</span>
       </h1>
+      <KeyRateBar />
       <button className="flex items-center gap-2">
-        <p>Search</p>
+        <p>Поиск</p>
         <i className="fa-solid fa-magnifying-glass"></i>
       </button>
     </header>

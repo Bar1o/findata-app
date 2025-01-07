@@ -45,3 +45,18 @@ export const IchimokuData = (rawData) => {
     console.error("Data fetching error:", err);
   }
 };
+
+export const FetchKeyRate = async (period) => {
+  try {
+    const response = await fetch(`/api/key_rate/${period}`);
+    if (!response.ok) {
+      throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
+    }
+    const data = await response.json();
+    console.log("key rate", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};

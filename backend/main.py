@@ -3,10 +3,12 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from all_candles import get_all_candles_by_figi, get_all_candles_by_period
-from modules.modules import Figi, all_figi_by_ticker, Candle, IchimokuCandle
+from models.models import Figi, all_figi_by_ticker, Candle, IchimokuCandle
 from typing import List
 import uvicorn
+
+from all_candles import get_all_candles_by_figi, get_all_candles_by_period
+from cbr_data import KeyRate
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -45,6 +47,13 @@ async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict
     logger.debug(f"Fetching all candles by figi: {figi} for period: {period}")
 
     return get_all_candles_by_period(figi, period)
+
+
+@app.get("/api/key_rate/{period}", response_model=dict)
+async def get_key_rate(period: str) -> dict:
+    logger.debug(f"Fetching keyRate for period: {period}")
+
+    return KeyRate(period=period).get_key_rate()
 
 
 app.add_middleware(

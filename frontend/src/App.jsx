@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import IndexIchimoku from "./components/IndexIchimoku";
 import PeriodButtons from "./components/PeriodButtons";
 import IndexIchimoku2 from "./components/IndexIchimoku2";
+import CompaniesPage from "./components/CompaniesPage";
 
 function App() {
   // TODO: далее фиги на каждой странице свой
@@ -15,9 +16,10 @@ function App() {
       <section className="min-h-screen flex flex-col">
         <Header />
         {/* <HomePage /> */}
+        <CompaniesPage />
+        <IndexIchimoku2 figi={figi} data={chartData} />
         <PeriodButtons figi={figi} setChartData={setChartData} />
         {/* <IndexIchimoku figi={figi} /> */}
-        <IndexIchimoku2 figi={figi} data={chartData} />
       </section>
       <div className="flex items-center justify-center gap-4">
         <p className="font-light text-grey-400 text-sm">
