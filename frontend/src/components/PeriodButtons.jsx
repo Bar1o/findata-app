@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
 import PropTypes, { number } from "prop-types";
 import { Button } from "@gravity-ui/uikit";
-import { FetchDataByPeriod, TransformData } from "./FetchData";
+import { FetchDataByPeriod, IchimokuData } from "./FetchData";
 
 const PeriodButtons = ({ figi, setChartData }) => {
   const periods = ["D", "3D", "W", "M", "3M", "Y"];
@@ -19,7 +19,7 @@ const PeriodButtons = ({ figi, setChartData }) => {
 
       try {
         const rawData = await FetchDataByPeriod({ figi, period });
-        const transformedData = TransformData(rawData);
+        const transformedData = IchimokuData(rawData);
         setChartData(transformedData);
       } catch (err) {
         console.error(`Error fetching data for period "${period}":`, err);

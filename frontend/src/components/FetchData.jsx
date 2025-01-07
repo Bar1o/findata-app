@@ -17,15 +17,15 @@ export const FetchDataByPeriod = async ({ figi, period }) => {
   }
 };
 
-export const TransformData = (rawData) => {
+export const IchimokuData = (rawData) => {
   try {
     if (!rawData || !rawData.data) {
       return;
     }
-    console.log("Raw data: ", rawData);
+    console.log("Raw data: ", rawData.data);
 
-    let transformed = rawData.data.map((item) => ({
-      time: Math.floor(new Date(item.time + "Z").getTime() / 1000),
+    let transformedData = rawData.data.map((item) => ({
+      time: item.time,
       open: item.open,
       high: item.high,
       low: item.low,
@@ -36,13 +36,41 @@ export const TransformData = (rawData) => {
       senkouSpanA: item.senkouSpanA,
       senkouSpanB: item.senkouSpanB,
     }));
-    transformed.sort((a, b) => a.time - b.time);
-    console.log("Transformed data: ", transformed);
+    transformedData.sort((a, b) => a.time - b.time);
+    console.log("Transformed data: ", transformedData);
 
-    const uniqueTransformed = transformed.filter((item, index, self) => index === self.findIndex((t) => t.time === item.time));
+    const uniqueTransformedData = transformedData.filter((item, index, self) => index === self.findIndex((t) => t.time === item.time));
+    return uniqueTransformedData;
 
-    console.log("Transformed Data After Removing Duplicates:", uniqueTransformed);
-    return uniqueTransformed;
+    // // Add whitespace data from 20:00 to 23:00 and from 00:00 to 03:00
+    // const dataWithWhitespace = [];
+    // let prevHour = -1;
+    // uniqueTransformed.forEach((item) => {
+    //   dataWithWhitespace.push(item);
+    //   const date = new Date(item.time * 1000);
+    //   const hour = date.getHours();
+
+    //   if (hour === 20) {
+    //     for (let h = 21; h <= 23; ++h) {
+    //       const whitespaceDate = new Date(date);
+    //       whitespaceDate.setHours(h, 0, 0, 0);
+    //       const whitespaceTime = Math.floor(whitespaceDate.getTime() / 1000);
+    //       dataWithWhitespace.push({ time: whitespaceTime });
+    //     }
+    //     for (let h = 0; h <= 3; ++h) {
+    //       const whitespaceDate = new Date(date);
+    //       whitespaceDate.setDate(whitespaceDate.getDate() + 1);
+    //       whitespaceDate.setHours(h, 0, 0, 0);
+    //       const whitespaceTime = Math.floor(whitespaceDate.getTime() / 1000);
+    //       dataWithWhitespace.push({ time: whitespaceTime });
+    //     }
+    //   }
+    // });
+    // console.log("Transformed Data After Adding Whitespace:", dataWithWhitespace);
+    // const dataWithWhitespaceFiltered = dataWithWhitespace.filter(
+    //   (item, index, self) => index === self.findIndex((t) => t.time === item.time)
+    // );
+    // return dataWithWhitespaceFiltered;
   } catch (err) {
     console.error("Data fetching error:", err);
   }

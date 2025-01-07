@@ -44,15 +44,15 @@ async def get_data_for_ichimoku(figi: str) -> dict:
 async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict:
     logger.debug(f"Fetching all candles by figi: {figi} for period: {period}")
 
-    return {"data": get_all_candles_by_period(figi, period)}
+    return get_all_candles_by_period(figi, period)
 
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3001",  # Local development
-        "https://findata.vabarnis.ru",  # Production
-        "http://findata.vabarnis.ru",  # Optional: in case of non-SSL
+        "http://localhost:3001",
+        "https://findata.vabarnis.ru",
+        "http://findata.vabarnis.ru",
     ],
     allow_credentials=True,
     allow_methods=["*"],

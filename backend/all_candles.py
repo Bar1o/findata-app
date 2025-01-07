@@ -49,9 +49,73 @@ def get_ichimoku(df: DataFrame, wi: Window = Window(small=9, medium=26, large=52
     return df
 
 
+# def fill_with_empty_data(all_candles: DataFrame) -> DataFrame:
+#     all_candles["time"] = pd.to_datetime(all_candles["time"])
+#     all_candles.set_index("time", inplace=True)
+
+#     # Create a complete hourly time range
+#     full_range = pd.date_range(start=all_candles.index.min(), end=all_candles.index.max(), freq="h")
+#     all_candles = all_candles.reindex(full_range)
+
+#     # Identify hours from 20:00 to 4:00 and set them to NaN
+#     mask = (all_candles.index.hour >= 21) | (all_candles.index.hour < 4)
+#     all_candles.loc[mask] = pd.NA
+
+#     all_candles.reset_index(inplace=True)
+#     all_candles.rename(columns={"index": "time"}, inplace=True)
+
+#     return all_candles
+
+
 def export(df: DataFrame) -> list:
     df["time"] = df["time"].dt.strftime("%Y-%m-%d %H:%M:%S")
+    # return df.to_dict(orient="records")
+    # df.set_index("time", inplace=True)
     return df.to_dict(orient="records")
+
+
+# def calc_buy_sell_signals(df: DataFrame):
+#     buySignals = (df["tenkanSen"] > df["kijunSen"]) & (df["tenkanSen"].shift(1) <= df["kijunSen"].shift(1))
+#     sellSignals = (df["tenkanSen"] < df["kijunSen"]) & (df["tenkanSen"].shift(1) >= df["kijunSen"].shift(1))
+
+#     bS = df["low"][buySignals].to_json()
+#     sS = df["high"][sellSignals].to_json()
+#     return bS, sS
+
+
+def export_nan(df: DataFrame) -> list:
+
+    result = []
+    for _, row in df.iterrows():
+        unix_time = int(row["time"].timestamp())
+        if row.isna().all():
+            result.append({"time": unix_time})
+        else:
+            data_dict = {"time": unix_time}
+            for col in df.columns:
+                if col != "time" and not pd.isna(row[col]):
+                    data_dict[col] = row[col]
+            result.append(data_dict)
+    # return json.dumps(result, default=str)
+    return result
+
+
+def calc_buy_sell_signals(df: DataFrame) -> tuple[list]:
+    buySignals = (df["tenkanSen"] > df["kijunSen"]) & (df["tenkanSen"].shift(1) <= df["kijunSen"].shift(1))
+    sellSignals = (df["tenkanSen"] < df["kijunSen"]) & (df["tenkanSen"].shift(1) >= df["kijunSen"].shift(1))
+
+    # series -> df -> drop index + add value -> export as list
+    bS = df.loc[buySignals, ["time", "low"]].copy()
+    bS.rename(columns={"low": "value"}, inplace=True)
+    bS["time"] = pd.to_datetime(bS["time"])
+    bS = export_nan(bS)
+
+    sS = df.loc[sellSignals, ["time", "high"]].copy()
+    sS.rename(columns={"high": "value"}, inplace=True)
+    sS["time"] = pd.to_datetime(sS["time"])
+    sS = export_nan(sS)
+
+    return bS, sS
 
 
 def get_all_candles_by_figi(figi: str) -> list:
@@ -84,7 +148,7 @@ def get_all_candles_by_period(figi: str, period: str) -> list:
             "D": CandleInterval.CANDLE_INTERVAL_HOUR,
             "3D": CandleInterval.CANDLE_INTERVAL_HOUR,
             "W": CandleInterval.CANDLE_INTERVAL_HOUR,
-            "M": CandleInterval.CANDLE_INTERVAL_DAY,
+            "M": CandleInterval.CANDLE_INTERVAL_4_HOUR,
             "3M": CandleInterval.CANDLE_INTERVAL_DAY,
             "Y": CandleInterval.CANDLE_INTERVAL_DAY,
         }
@@ -99,13 +163,17 @@ def get_all_candles_by_period(figi: str, period: str) -> list:
         df = get_ichimoku(df)
         logger.info("get_all_candles_by_period: exported the data")
 
-        return export(df)
+        bS, sS = calc_buy_sell_signals(df)
+        json_data = export_nan(df)
+        main_json_data = {"data": json_data, "signals": [{"buySignals": bS}, {"sellSignals": sS}]}
+        # return export(df)
+        return main_json_data
     except Exception as e:
         logger.error(f"Error: {e}")
         raise HTTPException(status_code=500, detail="get_all_candles_by_period error")
 
 
-print(get_all_candles_by_period("BBG004730N88", "D"))
+print(get_all_candles_by_period("BBG004730N88", "W"))
 
 # if __name__ == "__main__":
 #     main()

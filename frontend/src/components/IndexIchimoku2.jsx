@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { createChart } from "lightweight-charts";
-import { FetchDataByPeriod, TransformData } from "./FetchData";
+import { FetchDataByPeriod, IchimokuData } from "./FetchData";
 
 const IndexIchimoku2 = ({ figi, data }) => {
   const chartContainerRef = useRef(null);
@@ -33,10 +33,10 @@ const IndexIchimoku2 = ({ figi, data }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (!data || data.length === 0) {
-        const defaultPeriod = "3M";
+        const defaultPeriod = "D";
         try {
           const rawData = await FetchDataByPeriod({ figi, period: defaultPeriod });
-          const transformedData = TransformData(rawData);
+          const transformedData = IchimokuData(rawData);
           setChartData(transformedData);
         } catch (error) {
           console.error(`Error fetching data for period "${defaultPeriod}":`, error);
@@ -108,7 +108,12 @@ const IndexIchimoku2 = ({ figi, data }) => {
       purple: "#800080",
     };
 
-    const maxSenkouSpanB = Math.max(...chartData.map((item) => item.senkouSpanB));
+    const maxSenkouSpanB = Math.max(
+      ...chartData.map((item) => {
+        const val = parseFloat(item.senkouSpanB);
+        return Number.isFinite(val) ? val : 0;
+      })
+    );
     console.log("maxSenkouSpanB:", maxSenkouSpanB);
 
     if (maxSenkouSpanB !== -Infinity) {
