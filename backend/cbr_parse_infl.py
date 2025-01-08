@@ -2,8 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import logging
-from datetime import datetime
 import pandas as pd
+from sqlalchemy.orm import Session
+from models.db_model import InflationTable, SessionLocal
+from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -16,7 +18,24 @@ header_mapping = {
 }
 
 
+def row_to_dict(row):
+    return {
+        "date": row.date,
+        "keyRate": row.keyRate,
+        "infl": row.infl,
+        "targetInfl": row.targetInfl,
+        # "last_updated": row.last_updated.isoformat(),
+    }
+
+
 def fetch_inflation_table():
+    db: Session = SessionLocal()
+    # check if data is recent (e.g., within the last 7 days)
+    recent_data = db.query(InflationTable).filter(InflationTable.last_updated >= datetime.now() - timedelta(days=7)).all()
+
+    if recent_data:
+        return {"inflTable": [row_to_dict(row) for row in recent_data]}
+
     url = "https://www.cbr.ru/hd_base/infl/"
     response = requests.get(url)
 
@@ -45,14 +64,23 @@ def fetch_inflation_table():
 
         rows.append(row_dict)
 
-    return rows
+        # Save to database
+        db_row = InflationTable(
+            date=row_dict["date"],
+            keyRate=row_dict["keyRate"],
+            infl=row_dict["infl"],
+            targetInfl=row_dict["targetInfl"],
+            last_updated=datetime.now(),
+        )
+        db.merge(db_row)
+    db.commit()
+    db.close()
 
-    # json_data = json.dumps(rows, ensure_ascii=False, indent=4)
-    # return json_data
+    return {"inflTable": rows}
 
 
-try:
-    inflation_data = fetch_inflation_table()
-    logger.debug(inflation_data)
-except Exception as e:
-    logger.error(f"Error: {e}")
+# try:
+#     inflation_data = fetch_inflation_table()
+#     logger.debug(inflation_data)
+# except Exception as e:
+#     logger.error(f"Error: {e}")
