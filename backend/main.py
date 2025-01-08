@@ -8,7 +8,7 @@ from typing import List
 import uvicorn
 
 from all_candles import get_all_candles_by_figi, get_all_candles_by_period
-from cbr_data import KeyRate
+from cbr_keyrate import KeyRate
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
