@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
 
-from all_candles import IchimokuIndex
+from ichimoku_idx import IchimokuIndex
 from cbr_keyrate import KeyRate
 from cbr_parse_infl import fetch_inflation_table
 

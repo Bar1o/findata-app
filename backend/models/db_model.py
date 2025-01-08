@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, create_engine, Enum, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Float, Text, DateTime, create_engine, Enum, UniqueConstraint
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 import enum
@@ -33,6 +33,14 @@ class KeyRateTable(Base):
     last_updated = Column(DateTime, default=datetime.now())
 
     __table_args__ = (UniqueConstraint("period", "date", name="uix_period_date"),)
+
+
+class IchimokuIndexCache(Base):
+    __tablename__ = "ichimoku_index_cache"
+    figi = Column(String, primary_key=True)
+    period = Column(String, primary_key=True)
+    data = Column(Text)
+    timestamp = Column(DateTime, default=datetime.now())
 
 
 DATABASE_URL = "sqlite:///./db/database.db"

@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, PrivateAttr
 from typing import Dict, List, Literal
 
 from models.models import Quotation, factor, Window, Candle
-
+from models.db_model import SessionLocal, IchimokuIndexCache
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -40,6 +40,16 @@ interval_type: Dict[str, datetime] = {
 }
 
 
+def get_cache_validity(period: str) -> timedelta:
+    short_periods = ["D", "3D", "W"]
+    long_periods = ["M", "3M", "Y"]
+
+    if period in short_periods:
+        return timedelta(hours=1)  # Для коротких периодов допустимо в течение 1 часа
+    elif period in long_periods:
+        return timedelta(days=1)  # Для длинных периодов допустимо в течение 1 дня
+
+
 class IchimokuIndex(BaseModel):
     figi: str
     period: str
@@ -50,7 +60,62 @@ class IchimokuIndex(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         self._all_candles = []
-        self._df = self.get_all_candles_by_period()  # <- main method
+
+        cached = self.get_cache()
+        if cached:
+            data_list = json.loads(cached.data)
+            self._df = pd.DataFrame(data_list)
+            self._df["time"] = pd.to_datetime(self._df["time"], unit="s")
+            logger.info("Загружены данные из кэша")
+        else:
+            self._df = self.get_all_candles_by_period()
+            self.save_cache()
+            logger.info("Данные успешно закэшированы")
+
+    def get_cache(self):
+        session = SessionLocal()
+        try:
+            cache_entry = session.query(IchimokuIndexCache).filter_by(figi=self.figi, period=self.period).first()
+            if cache_entry:
+                time_diff = datetime.now() - cache_entry.timestamp
+                cache_validity = get_cache_validity(self.period)
+                if time_diff <= cache_validity:
+                    return cache_entry
+
+                # # очистка старых данных
+                # try:
+                #     logger.info("Очистка кэша")
+                #     one_day_ago = datetime.now() - timedelta(days=1)
+                #     rows_deleted = session.query(IchimokuIndexCache).filter(IchimokuIndexCache.timestamp < one_day_ago).delete()
+                #     session.commit()
+                # except Exception as e:
+                #     logger.error(f"Ошибка при очистке кэша: {e}")
+                #     session.rollback()
+
+            logger.info("Требуется обновление кэша")
+            return None
+        finally:
+            session.close()
+
+    def save_cache(self):
+        session = SessionLocal()
+        try:
+            serialized_data = self.export_nan(self._df)
+            json_data = json.dumps(serialized_data)
+            # logger.debug("JSON data: %s", json_data)
+            cache_entry = IchimokuIndexCache(
+                figi=self.figi,
+                period=self.period,
+                data=json_data,  # сохранение как JSON-строка
+                timestamp=datetime.now(),
+            )
+            session.merge(cache_entry)
+            session.commit()
+            session.close()
+        except Exception as e:
+            logger.error(f"Ошибка при сохранении в кэш: {e}")
+        finally:
+            session.close()
 
     @staticmethod
     def convert_quotation(q: Quotation):
@@ -79,7 +144,6 @@ class IchimokuIndex(BaseModel):
         return df
 
     def export_nan(self, df: DataFrame) -> DataFrame:
-
         result = []
         for _, row in df.iterrows():
             unix_time = int(row["time"].timestamp())
@@ -118,4 +182,5 @@ class IchimokuIndex(BaseModel):
         return {"data": json_data}
 
 
-print(IchimokuIndex(figi="BBG004730N88", period="W").get_exported_data())
+IchimokuIndex(figi="BBG004730N88", period="W").get_exported_data()
+# print(IchimokuIndex(figi="BBG004730N88", period="W").get_exported_data())
