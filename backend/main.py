@@ -6,8 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
 
-from models.models import Figi, all_figi_by_ticker
-from all_candles import get_all_candles_by_figi, get_all_candles_by_period
+from all_candles import IchimokuIndex
 from cbr_keyrate import KeyRate
 from cbr_parse_infl import fetch_inflation_table
 
@@ -18,28 +17,17 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 
-temp_figi = Figi(figi=all_figi_by_ticker["SBER"])
-figi = "BBG004730N88"
-
-
 @app.get("/")
 async def root():
     logger.debug("Handling request for root endpoint")
     return {"message": "Hello World"}
 
 
-@app.get("/api/index_ichimoku/{figi}", response_model=dict)
-async def get_data_for_ichimoku(figi: str) -> dict:
-    logger.debug(f"Fetching all candles by figi: {figi}")
-
-    return {"data": get_all_candles_by_figi(figi)}
-
-
 @app.get("/api/index_ichimoku/{figi}/{period}", response_model=dict)
 async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict:
     logger.debug(f"Fetching all candles by figi: {figi} for period: {period}")
 
-    return get_all_candles_by_period(figi, period)
+    return IchimokuIndex(figi=figi, period=period).get_exported_data()
 
 
 @app.get("/api/key_rate/{period}", response_model=dict)
