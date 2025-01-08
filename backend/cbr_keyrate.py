@@ -7,6 +7,9 @@ from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel, Field
 from typing import Dict, List, Literal
 import logging
+from sqlalchemy.orm import Session
+from models.db_model import KeyRateTable, SessionLocal, PeriodEnum
+
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -21,7 +24,6 @@ class KeyRate(BaseModel):
         self.periods = self.generate_periods()
 
     def get_dates(self) -> List[str]:
-        logger.debug("[from_date, to_date]: %s", self.periods[self.period])
         return self.periods[self.period]
 
     def generate_periods(self) -> Dict[str, List[str]]:
@@ -42,13 +44,30 @@ class KeyRate(BaseModel):
         return periods
 
     def get_key_rate(self) -> dict:
-        # source : https://cbr.ru/DailyInfoWebServ/DailyInfo.asmx?op=KeyRate
-
-        url = "https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx"
-
+        db: Session = SessionLocal()
         dates: List[date, date] = self.get_dates()
         from_date = dates[1]
         to_date = dates[0]
+
+        # check if data is recent (e.g., within the last day)
+        recent_data = (
+            db.query(KeyRateTable)
+            .filter(
+                KeyRateTable.period == PeriodEnum[self.period],
+                KeyRateTable.date >= datetime.datetime.strptime(from_date, "%Y-%m-%d"),
+            )
+            .all()
+        )
+        if recent_data:
+            data = [{"date": row.date, "rate": row.rate} for row in recent_data]
+            if self.period == "D":
+                data = data[0]
+
+            return {"keyRate": data}
+
+        logger.debug("Using CBR API: [from_date, to_date]: %s", self.periods[self.period])
+        # source & docs : https://cbr.ru/DailyInfoWebServ/DailyInfo.asmx?op=KeyRate
+        url = "https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx"
 
         SOAPEnvelope = f"""<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -113,6 +132,17 @@ class KeyRate(BaseModel):
                     formatted_dt = int(dt_obj.timestamp())
 
                     data.append({"dt": formatted_dt, "rate": float(rate)})
+
+                    # save to database
+                    db_row = KeyRateTable(
+                        period=PeriodEnum[self.period],
+                        date=dt_obj,
+                        rate=float(rate),
+                        last_updated=datetime.datetime.now(),
+                    )
+                    db.merge(db_row)
+                db.commit()
+                db.close()
 
                 if self.period == "D":
                     data = data[0]

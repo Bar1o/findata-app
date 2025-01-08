@@ -3,10 +3,10 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models.models import Figi, all_figi_by_ticker, Candle, IchimokuCandle
 from typing import List
 import uvicorn
 
+from models.models import Figi, all_figi_by_ticker
 from all_candles import get_all_candles_by_figi, get_all_candles_by_period
 from cbr_keyrate import KeyRate
 from cbr_parse_infl import fetch_inflation_table
