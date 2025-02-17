@@ -6,9 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
 
-from ichimoku_idx import IchimokuIndex
-from cbr_keyrate import KeyRate
-from cbr_parse_infl import fetch_inflation_table
+from services.ichimoku_idx import IchimokuIndex
+from services.cbr_keyrate import KeyRate
+from services.cbr_parse_infl import fetch_inflation_table
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
