@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from typing import Dict, List, Literal
 import logging
 from sqlalchemy.orm import Session
-from backend.models.db_model import KeyRateTable, SessionLocal, PeriodEnum
+from models.db_model import KeyRateTable, SessionLocal, PeriodEnum
 
 
 logging.basicConfig(level=logging.DEBUG)

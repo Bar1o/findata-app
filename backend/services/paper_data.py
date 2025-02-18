@@ -143,7 +143,7 @@ class PaperData(BaseModel):
                 divs_res[el] = shares[el]
 
         self.dividend_data = divs_res
-        return {"main_data": res}
+        return {"mainData": res}
 
 
 print(PaperData().export_main_data_json(ticker="SBER"))
