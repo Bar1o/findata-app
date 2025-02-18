@@ -6,12 +6,14 @@ import PeriodButtons from "./components/PeriodButtons";
 import IndexIchimoku2 from "./components/IndexIchimoku2";
 import CompaniesPage from "./components/CompaniesPage";
 import { use } from "react";
+import PaperMainData from "./components/PaperMainData";
 
 function App() {
   // TODO: далее фиги на каждой странице свой
   // const [onCompPage, setOnCompPage] = useState(true);
   const [chartData, setChartData] = useState([]);
   const figi = "BBG004730N88";
+  const ticker = "SBER";
 
   return (
     <div className="flex flex-col p-4 max-w-[1200px] mx-auto w-full">
@@ -22,6 +24,7 @@ function App() {
         <CompaniesPage />
         <IndexIchimoku2 figi={figi} data={chartData} />
         <PeriodButtons figi={figi} setChartData={setChartData} />
+        <PaperMainData ticker={ticker} />
         {/* <IndexIchimoku figi={figi} /> */}
       </section>
       <div className="flex items-center justify-center gap-4">

@@ -60,3 +60,18 @@ export const FetchKeyRate = async (period) => {
     throw err;
   }
 };
+
+export const FetchPaperData = async (path, ticker) => {
+  try {
+    const response = await fetch(`${path}${ticker}`);
+    if (!response.ok) {
+      throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
+    }
+    const data = await response.json();
+    console.log("main data", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};

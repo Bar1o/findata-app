@@ -47,7 +47,26 @@ async def get_inflation_table() -> dict:
 @app.get("/api/paper_main_data/{ticker}", response_model=dict)
 async def get_paper_main_data(ticker: str) -> dict:
     logger.debug("Fetching main data on paper")
-    return PaperData().export_main_data_json(ticker=ticker)
+    # return PaperData().export_main_data_json(ticker=ticker)
+    return {
+        "mainData": {
+            "ticker": "SBER",
+            "figi": "BBG004730N88",
+            "isin": "RU0009029540",
+            "issue_size": {"units": 21586948000, "nano": 0},
+            "nominal": {"units": 3, "nano": 0},
+            "nominal_currency": "RUB",
+            "primary_index": "IMOEX Index",
+            "preferred_share_type": "",
+            "ipo_date": "2007-07-11T00:00:00Z",
+            "registry_date": "2007-07-11T00:00:00Z",
+            "issue_kind": "non_documentary",
+            "placement_date": "2007-07-18T00:00:00Z",
+            "repres_isin": "",
+            "issue_size_plan": {"units": 21586948000, "nano": 0},
+            "total_float": {"units": 10361735040, "nano": 0},
+        }
+    }
 
 
 app.add_middleware(
