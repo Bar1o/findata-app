@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from typing import Dict, List, Literal
 import logging
 from sqlalchemy.orm import Session
-from models.db_model import KeyRateTable, SessionLocal, PeriodEnum
+from backend.models.db_model import KeyRateTable, SessionLocal, PeriodEnum
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -160,3 +160,4 @@ class KeyRate(BaseModel):
 
 
 kr = KeyRate(period="D").get_key_rate()
+print(kr)
