@@ -6,11 +6,13 @@ import json
 
 
 class PaperData(BaseModel):
+    """class handles tables for paper and returns data on ticker"""
+
     model_config = {"arbitrary_types_allowed": True}
 
-    ticker: str = None
-    figi: str = None
-    isin: str = None
+    # ticker: str = None
+    # figi: str = None
+    # isin: str = None
     # nominal_price: int
     # currency: str
     # listing_level: int
@@ -141,4 +143,7 @@ class PaperData(BaseModel):
                 divs_res[el] = shares[el]
 
         self.dividend_data = divs_res
-        return res
+        return {"main_data": res}
+
+
+print(PaperData().export_main_data_json(ticker="SBER"))

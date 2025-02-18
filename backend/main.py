@@ -9,6 +9,7 @@ import uvicorn
 from services.ichimoku_idx import IchimokuIndex
 from services.cbr_keyrate import KeyRate
 from services.cbr_parse_infl import fetch_inflation_table
+from services.paper_data import PaperData
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -41,6 +42,12 @@ async def get_key_rate(period: str) -> dict:
 async def get_inflation_table() -> dict:
     logger.debug("Fetching infl. table")
     return fetch_inflation_table()
+
+
+@app.get("/api/paper_main_data/{ticker}", response_model=dict)
+async def get_paper_main_data(ticker: str) -> dict:
+    logger.debug("Fetching main data on paper")
+    return PaperData().export_main_data_json(ticker=ticker)
 
 
 app.add_middleware(
