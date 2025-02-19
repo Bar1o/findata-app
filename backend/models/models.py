@@ -7,11 +7,14 @@ class Quotation(BaseModel):
     nano: int
 
 
-def convert_quotation(q: Quotation):
-    return q.units + q.nano / factor
-
-
 factor: int = 1_000_000_000
+
+
+def convert_quotation(q: Quotation):
+    res = q.units + q.nano / factor
+    if q.nano == 0:
+        return int(res)
+    return float(res)
 
 
 class Window(BaseModel):
