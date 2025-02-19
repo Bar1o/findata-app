@@ -51,6 +51,20 @@ class IchimokuCandle(BaseModel):
     chikou_span: float = None
 
 
+class DBManager(BaseModel):
+    def get_cache():
+        pass
+
+    def save_cache():
+        pass
+
+    def update_cache():
+        pass
+
+    def clear_outdated_cache():
+        pass
+
+
 all_figi_by_ticker: dict[str:str] = {
     "SBER": "BBG004730N88",
     "GAZP": "BBG004731354",

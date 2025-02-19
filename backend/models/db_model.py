@@ -44,6 +44,13 @@ class IchimokuIndexCache(Base):
     timestamp = Column(DateTime, default=datetime.now())
 
 
+class PaperDataCache(Base):
+    __tablename__ = "paper_data_cache"
+    ticker = Column(String, primary_key=True)
+    data = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.now, nullable=False)
+
+
 DATABASE_URL = "sqlite:///./db/database.db"
 
 engine = create_engine(DATABASE_URL)

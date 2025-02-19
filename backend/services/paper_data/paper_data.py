@@ -102,7 +102,7 @@ class PaperData(BaseModel):
         list_data = list(assdf["security"])  # isin, share are here
         return list_data
 
-    def export_main_data_json(self, ticker: str) -> json:
+    def export_main_data_json_by_ticker(self, ticker: str) -> json:
         """Look up the corresponding 'ticker' and 'figi'
         and join them with share data to return a JSON."""
 
@@ -158,4 +158,4 @@ class PaperData(BaseModel):
         return {"mainData": res}
 
 
-print(PaperData().export_main_data_json(ticker="SBER"))
+print(PaperData().export_main_data_json_by_ticker(ticker="SBER"))

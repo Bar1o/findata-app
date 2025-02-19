@@ -6,10 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
 
+from services.paper_data.paper_data_db import PaperDataDBManager
 from services.ichimoku.ichimoku_func import ichimoku_index_data
 from services.cbr_keyrate import KeyRate
 from services.cbr_parse_infl import fetch_inflation_table
-from services.paper_data import PaperData
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -47,26 +47,31 @@ async def get_inflation_table() -> dict:
 @app.get("/api/paper_main_data/{ticker}", response_model=dict)
 async def get_paper_main_data(ticker: str) -> dict:
     logger.debug("Fetching main data on paper")
-    # return PaperData().export_main_data_json(ticker=ticker)
-    return {
-        "mainData": {
-            "ticker": "SBER",
-            "figi": "BBG004730N88",
-            "isin": "RU0009029540",
-            "issue_size": 21586948000,
-            "nominal": 3,
-            "nominal_currency": "RUB",
-            "primary_index": "IMOEX Index",
-            "preferred_share_type": "",
-            "ipo_date": "2007-07-11T00:00:00Z",
-            "registry_date": "2007-07-11T00:00:00Z",
-            "issue_kind": "non_documentary",
-            "placement_date": "2007-07-18T00:00:00Z",
-            "repres_isin": "",
-            "issue_size_plan": 21586948000,
-            "total_float": 10361735040,
-        }
-    }
+    # return {
+    #     "mainData": {
+    #         "ticker": "SBER",
+    #         "figi": "BBG004730N88",
+    #         "isin": "RU0009029540",
+    #         "issue_size": 21586948000,
+    #         "nominal": 3,
+    #         "nominal_currency": "RUB",
+    #         "primary_index": "IMOEX Index",
+    #         "preferred_share_type": "",
+    #         "ipo_date": "2007-07-11T00:00:00Z",
+    #         "registry_date": "2007-07-11T00:00:00Z",
+    #         "issue_kind": "non_documentary",
+    #         "placement_date": "2007-07-18T00:00:00Z",
+    #         "repres_isin": "",
+    #         "issue_size_plan": 21586948000,
+    #         "total_float": 10361735040,
+    #     }
+    # }
+    try:
+        db_manager = PaperDataDBManager()
+        data = db_manager.update_cache(ticker)
+        return data  # returns {"mainData": {...}}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 app.add_middleware(
