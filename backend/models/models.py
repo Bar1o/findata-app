@@ -7,6 +7,10 @@ class Quotation(BaseModel):
     nano: int
 
 
+def convert_quotation(q: Quotation):
+    return q.units + q.nano / factor
+
+
 factor: int = 1_000_000_000
 
 

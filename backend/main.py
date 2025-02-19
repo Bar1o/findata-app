@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
 
-from services.ichimoku_idx import IchimokuIndex
+from services.ichimoku.ichimoku_func import ichimoku_index_data
 from services.cbr_keyrate import KeyRate
 from services.cbr_parse_infl import fetch_inflation_table
 from services.paper_data import PaperData
@@ -28,7 +28,7 @@ async def root():
 async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict:
     logger.debug(f"Fetching all candles by figi: {figi} for period: {period}")
 
-    return IchimokuIndex(figi=figi, period=period).get_exported_data()
+    return ichimoku_index_data(figi, period)
 
 
 @app.get("/api/key_rate/{period}", response_model=dict)

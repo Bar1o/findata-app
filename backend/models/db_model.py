@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Text, DateTime, create_en
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 import enum
+import os
 
 Base = declarative_base()
 
