@@ -51,6 +51,13 @@ class PaperDataCache(Base):
     timestamp = Column(DateTime, default=datetime.now, nullable=False)
 
 
+class DividendsCache(Base):
+    __tablename__ = "dividends_cache"
+    figi = Column(String, primary_key=True)
+    data = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.now, nullable=False)
+
+
 DATABASE_URL = "sqlite:///./db/database.db"
 
 engine = create_engine(DATABASE_URL)
