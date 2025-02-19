@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from decimal import Decimal
 
 
 class Quotation(BaseModel):
@@ -11,10 +12,16 @@ factor: int = 1_000_000_000
 
 
 def convert_quotation(q: Quotation):
-    res = q.units + q.nano / factor
+    res = Decimal(q.units) + Decimal(q.nano) / Decimal(factor)
     if q.nano == 0:
         return int(res)
     return float(res)
+
+
+class MoneyValue(BaseModel):
+    currency: str
+    units: int
+    nano: int
 
 
 class Window(BaseModel):
