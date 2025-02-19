@@ -53,8 +53,8 @@ async def get_paper_main_data(ticker: str) -> dict:
             "ticker": "SBER",
             "figi": "BBG004730N88",
             "isin": "RU0009029540",
-            "issue_size": {"units": 21586948000, "nano": 0},
-            "nominal": {"units": 3, "nano": 0},
+            "issue_size": 21586948000,
+            "nominal": 3,
             "nominal_currency": "RUB",
             "primary_index": "IMOEX Index",
             "preferred_share_type": "",
@@ -63,8 +63,8 @@ async def get_paper_main_data(ticker: str) -> dict:
             "issue_kind": "non_documentary",
             "placement_date": "2007-07-18T00:00:00Z",
             "repres_isin": "",
-            "issue_size_plan": {"units": 21586948000, "nano": 0},
-            "total_float": {"units": 10361735040, "nano": 0},
+            "issue_size_plan": 21586948000,
+            "total_float": 10361735040,
         }
     }
 

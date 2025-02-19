@@ -4,6 +4,8 @@ from pandas import DataFrame
 import pandas as pd
 import json
 
+from models.models import convert_quotation, Quotation
+
 
 class PaperData(BaseModel):
     """class handles tables for paper and returns data on ticker"""
@@ -104,6 +106,12 @@ class PaperData(BaseModel):
         """Look up the corresponding 'ticker' and 'figi'
         and join them with share data to return a JSON."""
 
+        def to_convert(el) -> bool:
+            list_to_convert = ["issue_size", "issue_size_plan", "nominal", "total_float"]
+            if el in list_to_convert:
+                return True
+            return False
+
         columns = [
             "issue_size",
             "nominal",
@@ -137,10 +145,14 @@ class PaperData(BaseModel):
 
         shares = list_data[0]["share"]
         for el in shares:
+            conv_shares_el = shares[el]
+            if to_convert(el):
+                conv_shares_el = convert_quotation(Quotation(**conv_shares_el))
+
             if el in columns:
-                res[el] = shares[el]
+                res[el] = conv_shares_el
             elif el in dividend_columns:
-                divs_res[el] = shares[el]
+                divs_res[el] = conv_shares_el
 
         self.dividend_data = divs_res
         return {"mainData": res}

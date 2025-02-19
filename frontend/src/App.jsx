@@ -24,7 +24,12 @@ function App() {
         <CompaniesPage />
         <IndexIchimoku2 figi={figi} data={chartData} />
         <PeriodButtons figi={figi} setChartData={setChartData} />
-        <PaperMainData ticker={ticker} />
+
+        <div className="flex flex-row mx-auto gap-4 w-full justify-between">
+          <PaperMainData ticker={ticker} />
+          <PaperMainData ticker={ticker} />
+          <PaperMainData ticker={ticker} />
+        </div>
         {/* <IndexIchimoku figi={figi} /> */}
       </section>
       <div className="flex items-center justify-center gap-4">
