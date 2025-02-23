@@ -11,19 +11,8 @@ class PaperData(BaseModel):
     """class handles tables for paper and returns data on ticker"""
 
     model_config = {"arbitrary_types_allowed": True}
-
-    # ticker: str = None
-    # figi: str = None
-    # isin: str = None
-    # nominal_price: int
-    # currency: str
-    # listing_level: int
-    # volume: int
-    # lot: int
-    # trade_start_data: datetime
-
     main_data: DataFrame = Field(default_factory=DataFrame)
-    dividend_data: dict = Field(default_factory=dict)
+    dividend_data: dict = Field(default_factory=dict)  # TODO: remove as not necessary
 
     ################# service variables #####################
     asset_data: DataFrame = Field(default_factory=DataFrame)
@@ -34,7 +23,7 @@ class PaperData(BaseModel):
         if self.main_data.empty:
             self.main_data = self.get_assets_table()
 
-    def get_assets_table(self):
+    def get_assets_table(self) -> DataFrame:
         """Return a consolidated table of assets info
         including uid, name and nested instrument main_data:
         figi, ticker, class_code"""
