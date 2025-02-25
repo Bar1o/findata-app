@@ -74,6 +74,9 @@ class PaperDataDBManager(BaseModel):
 
     def check_assets_table(self) -> list[dict]:
         """
+        EXTERNAL USE. Returns the assets info from DB.
+
+        Work logic:
         Checks if the asset table (from PaperData.get_assets_table()) is stored in the DB.
         If not, fetches the asset data, saves each row into the AssetsTable and returns the data.
         Returns a list of dicts with columns ['uid', 'name', 'figi', 'ticker', 'class_code'].

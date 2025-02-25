@@ -20,3 +20,23 @@ export const issueKindMapping = {
   documentary: "документарный",
   non_documentary: "недокументарный",
 };
+/////////////////////////////////
+
+export const divsLabels = {
+  dividend_net: "Дивиденд",
+  payment_date: "Дата фактической выплаты",
+  declared_date: "Дата объявления дивидендов",
+  last_buy_date: "Последний день покупки",
+  dividend_type: "Тип выплаты",
+  record_date: "Дата фиксации реестра",
+  regularity: "Регулярность выплаты",
+  close_price: "Цена закрытия",
+  yield_value: "Доходность",
+  created_at: "Дата создания записи",
+};
+
+export const regilarityMapping = {
+  Annual: "Ежегодная",
+  "Semi-anl": "Каждые полгода",
+  Quarter: "Квартальная",
+};

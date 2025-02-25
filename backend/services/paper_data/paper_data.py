@@ -8,7 +8,7 @@ from models.models import convert_quotation, Quotation
 
 
 class PaperData(BaseModel):
-    """class handles tables for paper and returns data on ticker"""
+    """Handles tables with main paper data (share main info) and returns data on ticker"""
 
     model_config = {"arbitrary_types_allowed": True}
     main_data: DataFrame = Field(default_factory=DataFrame)
@@ -25,8 +25,7 @@ class PaperData(BaseModel):
 
     def get_assets_table(self) -> DataFrame:
         """Return a consolidated table of assets info
-        including uid, name and nested instrument main_data:
-        figi, ticker, class_code"""
+        => columns [uid, name, figi, ticker, class_code]"""
 
         import os
         from tinkoff.invest import Client
@@ -56,6 +55,8 @@ class PaperData(BaseModel):
 
         return DataFrame(rows)
 
+    # service methods
+    #################################################################
     def get_uid_by_ticker(self, ticker: str) -> str | None:
         row = self.main_data[self.main_data["ticker"] == ticker]
         if not row.empty:
@@ -70,7 +71,10 @@ class PaperData(BaseModel):
 
     def get_asset_data_by_ticker(self, ticker: str) -> DataFrame:
         """
-        Retrieve asset data by uid from the API,
+        Func to get data from API.
+
+        Returns RAW asset data
+        from big asset table (gets tech share info) by 'uid' from the API,
         extract the 'security' table (isin and share info).
         """
         import os
@@ -91,9 +95,21 @@ class PaperData(BaseModel):
         list_data = list(assdf["security"])  # isin, share are here
         return list_data
 
+    ###############################################################
+
     def export_main_data_json_by_ticker(self, ticker: str) -> json:
-        """Look up the corresponding 'ticker' and 'figi'
-        and join them with share data to return a JSON."""
+        """
+        Formats data to get a JSON. Returs JSON.
+
+        Work logic:
+        + get_asset_data_by_ticker
+        + get_uid_by_ticker
+        + get_figi_by_ticker
+        -> format => JSON.
+
+        Look up the corresponding 'ticker' and 'figi'
+        and join them with share data to return a JSON.
+        """
 
         def to_convert(el) -> bool:
             list_to_convert = ["issue_size", "issue_size_plan", "nominal", "total_float"]
@@ -147,4 +163,4 @@ class PaperData(BaseModel):
         return {"mainData": res}
 
 
-print(PaperData().export_main_data_json_by_ticker(ticker="SBER"))
+# print(PaperData().export_main_data_json_by_ticker(ticker="SBER"))
