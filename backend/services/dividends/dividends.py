@@ -38,5 +38,5 @@ def get_dividend_data_by_figi(figi: str) -> dict:
     return dividend_data[0]
 
 
-dividend_data = get_dividend_data_by_figi("TCS00A107T19")
-print(json.dumps(dividend_data, default=str))
+# dividend_data = get_dividend_data_by_figi("TCS00A107T19")
+# print(json.dumps(dividend_data, default=str))

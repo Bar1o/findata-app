@@ -1,12 +1,12 @@
 import { useState } from "react";
 import HomePage from "./components/HomePage";
 import Header from "./components/Header";
-import IndexIchimoku from "./components/IndexIchimoku";
 import PeriodButtons from "./components/PeriodButtons";
 import IndexIchimoku2 from "./components/IndexIchimoku2";
 import CompaniesPage from "./components/CompaniesPage";
 import { use } from "react";
 import PaperMainData from "./components/PaperMainData";
+import DividendsData from "./components/DividendsData";
 
 function App() {
   // TODO: далее фиги на каждой странице свой
@@ -27,10 +27,13 @@ function App() {
 
         <div className="flex flex-row mx-auto gap-4 w-full justify-between">
           <PaperMainData ticker={ticker} />
+          <DividendsData figi={figi} />
+          <PaperMainData ticker={ticker} />
+        </div>
+        <div className="flex flex-row mx-auto gap-4 pt-2 w-full justify-between">
           <PaperMainData ticker={ticker} />
           <PaperMainData ticker={ticker} />
         </div>
-        {/* <IndexIchimoku figi={figi} /> */}
       </section>
       <div className="flex items-center justify-center gap-4">
         <p className="font-light text-grey-400 text-sm">
