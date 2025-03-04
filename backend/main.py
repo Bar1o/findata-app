@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
 
+from services.multiplicators.multiplicators_db import MultiplicatorsDBManager
 from services.dividends.dividends_db import DividendsDBManager
 from services.paper_data.paper_data_db import PaperDataDBManager
 from services.ichimoku.ichimoku_func import ichimoku_index_data
@@ -62,6 +63,16 @@ async def get_dividends(figi: str) -> dict:
         db_manager = DividendsDBManager()
         data = db_manager.update_cache(figi)
         return {"dividends": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/multiplicators_data/{ticker}", response_model=dict)
+async def get_multiplicators_data(ticker: str) -> dict:
+    try:
+        db_manager = MultiplicatorsDBManager()
+        data = db_manager.update_cache(ticker)
+        return {"multiplicators": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

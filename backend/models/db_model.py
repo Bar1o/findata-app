@@ -67,6 +67,13 @@ class DividendsCache(Base):
     timestamp = Column(DateTime, default=datetime.now, nullable=False)
 
 
+class MultiplicatorsCache(Base):
+    __tablename__ = "multiplicators_cache"
+    ticker = Column(String, primary_key=True, index=True)
+    data = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.now, nullable=False)
+
+
 DATABASE_URL = "sqlite:///./db/database.db"
 
 engine = create_engine(DATABASE_URL)
