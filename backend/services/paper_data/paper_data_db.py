@@ -1,3 +1,5 @@
+import os
+import pathlib
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import json
@@ -72,6 +74,22 @@ class PaperDataDBManager(BaseModel):
         finally:
             session.close()
 
+    ################################## logic for external use ###############
+    def load_securities_from_json(self) -> pd.DataFrame:
+        """Load securities data from the JSON file as a DataFrame"""
+        json_file_path = str(pathlib.Path(__file__).parent / "securities.json")
+
+        if not os.path.exists(json_file_path):
+            return pd.DataFrame()
+
+        try:
+            with open(json_file_path, "r") as f:
+                securities = json.load(f)
+                return pd.DataFrame(securities)
+        except (json.JSONDecodeError, FileNotFoundError) as e:
+            print(f"Error loading securities.json: {e}")
+            return pd.DataFrame()
+
     def check_assets_table(self) -> list[dict]:
         """
         EXTERNAL USE. Returns the assets info from DB.
@@ -80,26 +98,22 @@ class PaperDataDBManager(BaseModel):
         Checks if the asset table (from PaperData.get_assets_table()) is stored in the DB.
         If not, fetches the asset data, saves each row into the AssetsTable and returns the data.
         Returns a list of dicts with columns ['uid', 'name', 'figi', 'ticker', 'class_code'].
+
+        Work logic:
+        1. Gets assets data from the database
+        2. Reads additional data from securities.json
+        3. Combines both datasets and returns a DataFrame
+        4. Doesn't store securities.json data in the database
         """
+
         session = self.get_session()
+
         try:
             stored_assets = session.query(AssetsTable).all()
-            if stored_assets:
-                return [
-                    {
-                        "uid": asset.uid,
-                        "name": asset.name,
-                        "figi": asset.figi,
-                        "ticker": asset.ticker,
-                        "class_code": asset.class_code,
-                    }
-                    for asset in stored_assets
-                ]
-            else:
-                # No assets in the DB; fetch via PaperData.
+            if not stored_assets:
                 paper_data_instance = PaperData()
-                assets_df: pd.DataFrame = paper_data_instance.get_assets_table()
-                # Insert each asset row into the AssetsTable.
+                assets_df = paper_data_instance.get_assets_table()
+
                 for _, row in assets_df.iterrows():
                     asset = AssetsTable(
                         uid=row["uid"],
@@ -110,6 +124,31 @@ class PaperDataDBManager(BaseModel):
                     )
                     session.add(asset)
                 session.commit()
-                return assets_df.to_dict(orient="records")
+
+                db_data = assets_df
+
+            elif stored_assets:
+                db_data = pd.DataFrame(
+                    [
+                        {
+                            "uid": asset.uid,
+                            "name": asset.name,
+                            "figi": asset.figi,
+                            "ticker": asset.ticker,
+                            "class_code": asset.class_code,
+                        }
+                        for asset in stored_assets
+                    ]
+                )
+
+            securities_df = self.load_securities_from_json()
+
+            if securities_df.empty:
+                return db_data
+
+            combined_df = pd.concat([db_data, securities_df], ignore_index=True)
+            combined_df = combined_df.drop_duplicates(subset=["uid"], keep="last")
+
+            return combined_df
         finally:
             session.close()

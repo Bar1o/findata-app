@@ -6,6 +6,8 @@ import json
 
 from models.models import convert_quotation, Quotation
 
+from .total_tickers import api_tickers
+
 
 class PaperData(BaseModel):
     """Handles tables with main paper data (share main info) and returns data on ticker"""
@@ -52,11 +54,13 @@ class PaperData(BaseModel):
                         }
                     )
                 rows.append(asset_data)
-
-        return DataFrame(rows)
+        assets_table = DataFrame(rows)
+        asstable = assets_table.loc[assets_table["ticker"].isin(api_tickers)]
+        return asstable
 
     # service methods
     #################################################################
+
     def get_uid_by_ticker(self, ticker: str) -> str | None:
         row = self.main_data[self.main_data["ticker"] == ticker]
         if not row.empty:

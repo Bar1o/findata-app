@@ -5,4 +5,5 @@ from .paper_data_db import PaperDataDBManager
 db_manager = PaperDataDBManager()
 
 assets_data = db_manager.check_assets_table()
-print(assets_data)
+print(assets_data.columns)
+print(assets_data[["ticker", "name", "figi"]])

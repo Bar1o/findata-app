@@ -1,0 +1,98 @@
+[
+  {
+    "uid": "",
+    "name": "Акции обыкновенные Яндекс Н.В.",
+    "figi": "BBG004S68B31",
+    "ticker": "YDEX",
+    "class_code": "TQBR",
+    "isin": "US98433U1019"
+  },
+  {
+    "uid": "",
+    "name": "Глобальные депозитарные расписки Ozon Holdings PLC",
+    "figi": "BBG00Y91R9T3",
+    "ticker": "OZON",
+    "class_code": "SPBXM",
+    "isin": "US69269L1044"
+  },
+  {
+    "uid": "",
+    "name": "Глобальные депозитарные расписки Lenta LLC",
+    "figi": "BBG00Y91R9S5",
+    "ticker": "LENT",
+    "class_code": "SPBXM",
+    "isin": "US52606J1084"
+  },
+  {
+    "uid": "",
+    "name": "Акции обыкновенные ПАО Газпром",
+    "figi": "BBG004S683W7",
+    "ticker": "GAZP",
+    "class_code": "TQBR",
+    "isin": "US3682872078"
+  },
+  {
+    "uid": "",
+    "name": "Глобальные депозитарные расписки HeadHunter Group PLC",
+    "figi": "BBG00Y91R9R7",
+    "ticker": "HEAD",
+    "class_code": "SPBXM",
+    "isin": "JE00BK5BCH13"
+  },
+  {
+    "uid": "",
+    "name": "Акции обыкновенные ПАО Группа ПИК",
+    "figi": "BBG00Y91R9Q9",
+    "ticker": "PIKK",
+    "class_code": "TQBR",
+    "isin": "RU000A100W63"
+  },
+  {
+    "uid": "",
+    "name": "Глобальные депозитарные расписки X5 Retail Group NV",
+    "figi": "BBG00Y91R9P1",
+    "ticker": "X5",
+    "class_code": "SPBXM",
+    "isin": "JE00BZ1YQV66"
+  },
+  {
+    "uid": "",
+    "name": "Акции обыкновенные ПАО ЛСР",
+    "figi": "BBG004S684Y7",
+    "ticker": "LSRG",
+    "class_code": "TQBR",
+    "isin": "RU000A0JP2W7"
+  },
+  {
+    "uid": "",
+    "name": "Акции обыкновенные ПАО М.Видео-Эльдорадо",
+    "figi": "BBG004S684X9",
+    "ticker": "MSTT",
+    "class_code": "TQBR",
+    "isin": "RU000A0JQ3M1"
+  },
+  {
+    "uid": "",
+    "name": "Акции обыкновенные ПАО НК Роснефть",
+    "figi": "BBG004S684W0",
+    "ticker": "ROSN",
+    "class_code": "TQBR",
+    "isin": "US7757541012"
+  },
+  {
+    "uid": "",
+    "name": "Акции обыкновенные ПАО Лукойл",
+    "figi": "BBG004S684V2",
+    "ticker": "LKOH",
+    "class_code": "TQBR",
+    "isin": "US5492721086"
+  },
+  {
+    "uid": "",
+    "name": "Акции обыкновенные ПАО Новатэк",
+    "figi": "BBG004S684U4",
+    "ticker": "NVTK",
+    "class_code": "TQBR",
+    "isin": "US67000T1045"
+  }
+]
