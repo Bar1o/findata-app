@@ -84,36 +84,48 @@ def parse_financial_data(ticker: str, target_year: int = datetime.now().year):
 
     # Маппинг полей, которые будут в итоговом json
     # IMPORTANT: абсолютные значения — млрд руб (на фронте отобразить подпись млрд)
+
     field_mapping = {
-        "market_cap": "market_capitalization",
-        "free_float": "free_float",
-        "div_yield": "forward_annual_dividend_yield",
-        "number_of_shares": "shares_outstanding",
-        "revenue": "revenue_ttm",
-        "ebitda": "ebitda_ttm",
-        "net_income": "net_income_ttm",
-        "eps": "eps_ttm",
-        "p_e": "pe_ratio_ttm",
-        "p_s": "price_to_sales_ttm",
-        "p_bv": "price_to_book_ttm",
-        "ev": "total_enterprise_value_mrq",
-        "ev_ebitda": "ev_to_ebitda_mrq",
-        "roe": "roe",
-        "roa": "roa",
-        "dividend": "dividends_per_share",
-        "div_payout_ratio": "dividend_payout_ratio_fy",
-        "debt_ebitda": "total_debt_to_ebitda_mrq",
+        "market_cap": ("market_capitalization", "млрд руб"),
+        "free_float": ("free_float", "%"),
+        "div_yield": ("forward_annual_dividend_yield", "%"),
+        "number_of_shares": ("shares_outstanding", "млн"),
+        "revenue": ("revenue_ttm", "млрд руб"),
+        "ebitda": ("ebitda_ttm", "млрд руб"),
+        "net_income": ("net_income_ttm", "млрд руб"),
+        "eps": ("eps_ttm", "руб"),
+        "p_e": ("pe_ratio_ttm", ""),
+        "p_s": ("price_to_sales_ttm", ""),
+        "p_bv": ("price_to_book_ttm", ""),
+        "ev": ("total_enterprise_value_mrq", "млрд руб"),
+        "ev_ebitda": ("ev_to_ebitda_mrq", ""),
+        "roe": ("roe", "%"),
+        "roa": ("roa", "%"),
+        "dividend": ("dividends_per_share", "руб"),
+        "div_payout_ratio": ("dividend_payout_ratio_fy", "%"),
+        "debt_ebitda": ("total_debt_to_ebitda_mrq", ""),
     }
 
     # Парсинг данных
-    for field, target in field_mapping.items():
+    for field, (target, default_unit) in field_mapping.items():
         row = table.find("tr", {"field": field})
         if row:
+            # Извлечение единиц измерения из заголовка
+            unit = default_unit
+            header = row.find("th")
+            if header:
+                unit_span = header.find("span")
+                if unit_span:
+                    unit = unit_span.get_text(strip=True).replace(",", "").replace("(", "").replace(")", "")
+
+            # Извлечение значения
             tds = row.find_all("td")
             if len(tds) > year_idx:
                 value = tds[year_idx].get_text(strip=True)
                 cleaned_value = value.replace(" ", "").replace(",", ".").replace("%", "")
-                result[target] = cleaned_value if cleaned_value else None
+
+                # Формирование структуры данных
+                result[target] = {"value": cleaned_value if cleaned_value else None, "unit": unit.strip() or default_unit}
 
     return result
 
@@ -128,4 +140,4 @@ def parse_financial_data(ticker: str, target_year: int = datetime.now().year):
 
 # print(json.dumps(get_parsed_financial_data(), default=str, indent=2))
 
-print(parse_financial_data("LKOH"))
+# print(parse_financial_data("LKOH"))
