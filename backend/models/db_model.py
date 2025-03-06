@@ -62,7 +62,7 @@ class AssetsTable(Base):
 
 class DividendsCache(Base):
     __tablename__ = "dividends_cache"
-    figi = Column(String, primary_key=True)
+    ticker = Column(String, primary_key=True)
     data = Column(Text, nullable=False)
     timestamp = Column(DateTime, default=datetime.now, nullable=False)
 

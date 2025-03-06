@@ -57,11 +57,11 @@ async def get_paper_main_data(ticker: str) -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/dividend_data/{figi}", response_model=dict)
-async def get_dividends(figi: str) -> dict:
+@app.get("/api/dividend_data/{ticker}", response_model=dict)
+async def get_dividends(ticker: str) -> dict:
     try:
         db_manager = DividendsDBManager()
-        data = db_manager.update_cache(figi)
+        data = db_manager.update_cache(ticker)
         return {"dividends": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

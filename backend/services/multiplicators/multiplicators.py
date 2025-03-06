@@ -13,7 +13,7 @@ TOKEN = os.environ["INVEST_TOKEN"]
 
 # сделать импорт таблицы со всеми figi-uid
 db_manager = PaperDataDBManager()
-assets_data = db_manager.check_assets_table()
+
 
 # взять uid по figi для каждого ticker из api_tickers используя assets_data
 # тем самым получив list of assets и через этот list делать запрос в get_multiplicator_data_by_figi
@@ -26,11 +26,9 @@ def get_asset_uids(tickers: List[str] = api_tickers) -> List[str]:
     uids = []
     for ticker in tickers:
         # Find the row for this ticker in assets_data
-        ticker_row = assets_data[assets_data["ticker"] == ticker]
-        if not ticker_row.empty:
-            uid = ticker_row.iloc[0]["uid"]
-            if uid:  # Skip empty UIDs
-                uids.append(uid)
+        uid = db_manager.get_uid_by_ticker(ticker)
+        if uid:  # Skip empty UIDs
+            uids.append(uid)
     return uids
 
 
@@ -61,10 +59,7 @@ def convert_api_data(api_data: dict) -> dict:
         "roic": ("%", 1),
         "total_debt_to_equity_mrq": ("", 1),
         "total_debt_to_ebitda_mrq": ("", 1),
-        "dividend_yield_daily_ttm": ("%", 1),
         "current_ratio_mrq": ("", 1),
-        "dividend_rate_ttm": ("руб", 1),
-        "dividends_per_share": ("руб", 1),
         "five_years_average_dividend_yield": ("%", 1),
         "dividend_payout_ratio_fy": ("%", 1),
         "buy_back_ttm": ("млрд руб", 1e9),
@@ -110,8 +105,9 @@ def get_multiplicator_data_from_api():
     Fetches the fundamentals for all assets in the list (obtained via get_asset_uids)
     and returns a dictionary with the ticker as key and the corresponding data as value.
     """
-    all_results = {}
-    converted_results = {}
+    mult_res = {}
+    conv_multip_res = {}
+
     with Client(TOKEN) as client:
         request = GetAssetFundamentalsRequest(
             # assets=["40d89385-a03a-4659-bf4e-d3ecba011782"],
@@ -120,10 +116,8 @@ def get_multiplicator_data_from_api():
         response = client.instruments.get_asset_fundamentals(request=request)
 
         for res in response.fundamentals:
-            ticker_rows = assets_data[assets_data["uid"] == res.asset_uid]
-            ticker = ticker_rows.iloc[0]["ticker"] if not ticker_rows.empty else res.asset_uid
-
-            all_results[ticker] = {
+            ticker = db_manager.get_ticker_by_uid(res.asset_uid)
+            mult_res[ticker] = {
                 "market_capitalization": res.market_capitalization,
                 "ticker": ticker,
                 "currency": res.currency,
@@ -133,7 +127,6 @@ def get_multiplicator_data_from_api():
                 "average_daily_volume_last_4_weeks": res.average_daily_volume_last_4_weeks,
                 "beta": res.beta,
                 "free_float": res.free_float,
-                "forward_annual_dividend_yield": res.forward_annual_dividend_yield,
                 "shares_outstanding": res.shares_outstanding,
                 "revenue_ttm": res.revenue_ttm,
                 "ebitda_ttm": res.ebitda_ttm,
@@ -149,12 +142,6 @@ def get_multiplicator_data_from_api():
                 "roic": res.roic,
                 "total_debt_to_equity_mrq": res.total_debt_to_equity_mrq,
                 "total_debt_to_ebitda_mrq": res.total_debt_to_ebitda_mrq,
-                "dividend_yield_daily_ttm": res.dividend_yield_daily_ttm,
-                "current_ratio_mrq": res.current_ratio_mrq,
-                "dividend_rate_ttm": res.dividend_rate_ttm,
-                "dividends_per_share": res.dividends_per_share,
-                "five_years_average_dividend_yield": res.five_years_average_dividend_yield,
-                "dividend_payout_ratio_fy": res.dividend_payout_ratio_fy,
                 "buy_back_ttm": res.buy_back_ttm,
                 "one_year_annual_revenue_growth_rate": res.one_year_annual_revenue_growth_rate,
                 "revenue_change_five_years": res.revenue_change_five_years,
@@ -162,10 +149,42 @@ def get_multiplicator_data_from_api():
                 "ev_to_sales": res.ev_to_sales,
                 "ex_dividend_date": res.ex_dividend_date,
             }
-            converted_results[ticker] = convert_api_data(all_results[ticker])
-    # print(all_results)
-    return converted_results
 
+            conv_multip_res[ticker] = convert_api_data(mult_res[ticker])
+
+    return conv_multip_res
+
+
+def get_divs_from_multiplicator_data_from_api(ticker: str) -> dict:
+    """
+    используется в dividends.py для дополения данных о дивидендах тех тикеров,
+    которые есть в списке api_tickers
+    """
+    if ticker not in api_tickers:
+        return dict()
+
+    divs_res = {}
+    conv_divs_res = {}
+
+    uid = db_manager.get_uid_by_ticker(ticker)
+
+    with Client(TOKEN) as client:
+        request = GetAssetFundamentalsRequest(assets=[uid])
+        response = client.instruments.get_asset_fundamentals(request=request)
+
+        for res in response.fundamentals:
+            divs_res = {
+                "current_ratio_mrq": res.current_ratio_mrq,
+                "five_years_average_dividend_yield": res.five_years_average_dividend_yield,
+                "dividend_payout_ratio_fy": res.dividend_payout_ratio_fy,
+                "forward_annual_dividend_yield": res.forward_annual_dividend_yield,
+            }
+
+            conv_divs_res = convert_api_data(divs_res)
+    return conv_divs_res
+
+
+# print(json.dumps(get_divs_from_multiplicator_data_from_api("SBER"), default=str, indent=2, ensure_ascii=False))
 
 # data = {
 #     "multiplicators": {

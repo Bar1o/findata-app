@@ -21,9 +21,9 @@ const PaperMainData = (props) => {
   }, [ticker]);
 
   return (
-    <div className="flex-col ">
-      <div className="w-full text-center p-1 bg-sky-100 text-sky-700 rounded-t-lg">Данные о бумаге</div>
-      <div className="bg-white p-2 rounded-b-lg">
+    <div className="flex-col">
+      <div className="font-medium w-full text-center p-1 bg-sky-100 text-sky-700 rounded-t-lg">Данные о бумаге</div>
+      <div className="text-sm bg-white p-4 rounded-b-lg">
         {mainData && (
           <ul>
             {Object.keys(mainData)
@@ -37,7 +37,7 @@ const PaperMainData = (props) => {
                 }
                 return (
                   <li key={key}>
-                    <strong>{paperMainLabels[key] || key}:</strong> {displayValue}
+                    <span className="font-semibold">{paperMainLabels[key] || key}:</span> {displayValue}
                   </li>
                 );
               })}
