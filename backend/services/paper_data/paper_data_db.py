@@ -152,3 +152,23 @@ class PaperDataDBManager(BaseModel):
             return combined_df
         finally:
             session.close()
+
+    def get_figi_by_ticker(self, ticker: str) -> str:
+        assets_data = self.check_assets_table()
+        return assets_data.loc[assets_data["ticker"] == ticker]["figi"][0]
+
+    def get_uid_by_ticker(self, ticker: str) -> str | None:
+        """only for tickers in api_tickers"""
+        assets_data = self.check_assets_table()
+        matching_rows = assets_data.loc[assets_data["ticker"] == ticker]
+        if matching_rows.empty:
+            return None
+        return matching_rows["uid"].iloc[0]
+
+    def get_ticker_by_uid(self, uid: str) -> str | None:
+        """only for tickers in api_tickers"""
+        assets_data = self.check_assets_table()
+        matching_rows = assets_data.loc[assets_data["uid"] == uid]
+        if matching_rows.empty:
+            return None
+        return matching_rows["ticker"].iloc[0]

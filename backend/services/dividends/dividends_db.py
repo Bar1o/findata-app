@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import json
 
 from models.db_model import SessionLocal, DividendsCache
-from services.dividends.dividends import get_dividend_data_by_figi
+from services.dividends.dividends import get_extended_dividend_data_by_ticker
 
 
 class DividendsDBManager(BaseModel):
@@ -19,10 +19,10 @@ class DividendsDBManager(BaseModel):
     def get_session(self):
         return SessionLocal()
 
-    def get_cache(self, figi: str) -> dict | None:
+    def get_cache(self, ticker: str) -> dict | None:
         session = self.get_session()
         try:
-            cache = session.query(DividendsCache).filter(DividendsCache.figi == figi).first()
+            cache = session.query(DividendsCache).filter(DividendsCache.ticker == ticker).first()
             # сheck if found and not older than cache_duration
             if cache and (datetime.now() - cache.timestamp) < self.cache_duration:
                 return json.loads(cache.data)
@@ -30,31 +30,31 @@ class DividendsDBManager(BaseModel):
         finally:
             session.close()
 
-    def save_cache(self, figi: str, data: dict) -> None:
+    def save_cache(self, ticker: str, data: dict) -> None:
         session = self.get_session()
         try:
             cache = DividendsCache(
-                figi=figi, data=json.dumps(data, default=str), timestamp=datetime.now()  # default=str converts datetime to string
+                ticker=ticker, data=json.dumps(data, default=str), timestamp=datetime.now()  # default=str converts datetime to string
             )
             session.merge(cache)
             session.commit()
         finally:
             session.close()
 
-    def update_cache(self, figi: str) -> dict:
+    def update_cache(self, ticker: str) -> dict:
         """
-        Returns dividends data for the given figi.
+        Returns dividends data for the given ticker.
         If a valid cache exists (less than 1 day), it returns it.
         Otherwise, it fetches new data via get_dividend_data(), saves it, then returns it.
         """
         self.clear_outdated_cache()
 
-        cached_data = self.get_cache(figi)
+        cached_data = self.get_cache(ticker)
         if cached_data is not None:
             return cached_data
 
-        new_data = get_dividend_data_by_figi(figi=figi)
-        self.save_cache(figi, new_data)
+        new_data = get_extended_dividend_data_by_ticker(ticker=ticker)  # Update this function name if needed
+        self.save_cache(ticker, new_data)
         return new_data
 
     def clear_outdated_cache(self) -> None:

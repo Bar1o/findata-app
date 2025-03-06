@@ -21,22 +21,43 @@ const DividendsData = (props) => {
 
   return (
     <div className="flex-col">
-      <div className="w-full text-center p-1 bg-sky-100 text-sky-700 rounded-t-lg">Дивиденды</div>
-      <div className="bg-white p-2 rounded-b-lg">
+      <div className="font-medium w-full text-center p-1 bg-sky-100 text-sky-700 rounded-t-lg">Дивиденды</div>
+      <div className="text-sm bg-white p-4 rounded-b-lg">
         {mainData && (
           <ul>
             {Object.keys(mainData)
-              .filter((key) => mainData[key])
+              .filter((key) => {
+                return (
+                  // если у элементов пустые значения
+                  mainData[key] &&
+                  mainData[key].value &&
+                  mainData[key].value !== "" &&
+                  mainData[key].value !== "0" &&
+                  mainData[key].value !== "0.00" &&
+                  mainData[key].value !== "0.0"
+                );
+              })
+
               .map((key) => {
-                let displayValue = formatValue(mainData[key]);
+                let displayValue;
+
                 if (key === "regularity") {
-                  displayValue = regilarityMapping[mainData[key]] || mainData[key];
-                } else if (["payment_date", "declared_date", "last_buy_date", "record_date", "created_at"].includes(key)) {
-                  displayValue = formatDate(mainData[key]);
+                  // Обрабатываем регулярность выплат с учетом мэппинга
+                  displayValue = regilarityMapping[mainData[key].value] || mainData[key].value;
+                } else if (
+                  ["payment_date", "declared_date", "last_buy_date", "record_date", "created_at", "ex_dividend_date"].includes(key)
+                ) {
+                  displayValue = formatDate(mainData[key].value);
+                } else {
+                  // значение с единицей измерения, если она есть
+                  displayValue = mainData[key].value;
+                  if (mainData[key].unit) {
+                    displayValue += ` ${mainData[key].unit}`;
+                  }
                 }
                 return (
                   <li key={key}>
-                    <strong>{divsLabels[key] || key}:</strong> {displayValue}
+                    <span className="font-semibold">{divsLabels[key] || key}:</span> {displayValue}
                   </li>
                 );
               })}
