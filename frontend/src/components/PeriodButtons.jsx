@@ -4,7 +4,7 @@ import PropTypes, { number } from "prop-types";
 import { Button } from "@gravity-ui/uikit";
 import { FetchDataByPeriod, IchimokuData } from "./FetchData";
 
-const PeriodButtons = ({ figi, setChartData }) => {
+const PeriodButtons = ({ ticker, setChartData }) => {
   const periods = ["D", "3D", "W", "M", "3M", "Y"];
 
   const [activePeriod, setActivePeriod] = useState("W");
@@ -18,7 +18,7 @@ const PeriodButtons = ({ figi, setChartData }) => {
       setError(null);
 
       try {
-        const rawData = await FetchDataByPeriod({ figi, period });
+        const rawData = await FetchDataByPeriod({ ticker, period });
         const transformedData = IchimokuData(rawData);
         setChartData(transformedData);
       } catch (err) {
@@ -29,7 +29,7 @@ const PeriodButtons = ({ figi, setChartData }) => {
         setLoading(false);
       }
     },
-    [figi, loading, setChartData]
+    [ticker, loading, setChartData]
   );
 
   return (
@@ -51,7 +51,7 @@ const PeriodButtons = ({ figi, setChartData }) => {
 };
 
 PeriodButtons.propTypes = {
-  figi: PropTypes.string.isRequired,
+  ticker: PropTypes.string.isRequired,
   setChartData: PropTypes.func.isRequired,
 };
 

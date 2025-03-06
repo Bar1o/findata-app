@@ -27,11 +27,11 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/api/index_ichimoku/{figi}/{period}", response_model=dict)
-async def get_all_candles_for_ichimoku_by_period(figi: str, period: str) -> dict:
-    logger.debug(f"Fetching all candles by figi: {figi} for period: {period}")
+@app.get("/api/index_ichimoku/{ticker}/{period}", response_model=dict)
+async def get_all_candles_for_ichimoku_by_period(ticker: str, period: str) -> dict:
+    logger.debug(f"Fetching all candles by ticker: {ticker} for period: {period}")
 
-    return ichimoku_index_data(figi, period)
+    return ichimoku_index_data(ticker, period)
 
 
 @app.get("/api/key_rate/{period}", response_model=dict)

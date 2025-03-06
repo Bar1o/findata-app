@@ -9,12 +9,14 @@ import logging
 from pandas import DataFrame
 from pydantic import BaseModel, Field, PrivateAttr
 
-
+from ..paper_data.paper_data_db import PaperDataDBManager
 from models.models import Quotation, factor, Window, Candle, convert_quotation
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 load_dotenv()
+
+db_manager = PaperDataDBManager()
 
 TOKEN = os.environ["INVEST_TOKEN"]
 
@@ -38,7 +40,7 @@ interval_type = {
 
 
 class IchimokuApi(BaseModel):
-    figi: str
+    ticker: str
     period: str
 
     _all_candles: list = []
@@ -65,11 +67,12 @@ class IchimokuApi(BaseModel):
         return df
 
     def get_all_candles_by_period(self) -> DataFrame:
+        figi = db_manager.get_figi_by_ticker(self.ticker)
         try:
             self._all_candles.clear()
             with Client(TOKEN) as client:
                 for candle in client.get_all_candles(
-                    figi=self.figi,
+                    figi=figi,
                     from_=now() - timedelta_type[self.period],
                     interval=interval_type[self.period],
                 ):
@@ -103,4 +106,4 @@ class IchimokuApi(BaseModel):
         return {"data": json_data}
 
 
-IchimokuApi(figi="BBG004730N88", period="W").get_exported_data()
+IchimokuApi(ticker="SBER", period="W").get_exported_data()

@@ -9,8 +9,8 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def ichimoku_index_data(figi: str, period: str):
-    db_manager = IchimokuDbManager(figi=figi, period=period)
+def ichimoku_index_data(ticker: str, period: str):
+    db_manager = IchimokuDbManager(ticker=ticker, period=period)
     cache = db_manager.get_cache()
 
     if cache:  # check for valid cache

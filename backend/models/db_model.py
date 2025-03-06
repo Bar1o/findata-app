@@ -38,7 +38,7 @@ class KeyRateTable(Base):
 
 class IchimokuIndexCache(Base):
     __tablename__ = "ichimoku_index_cache"
-    figi = Column(String, primary_key=True)
+    ticker = Column(String, primary_key=True)
     period = Column(String, primary_key=True)
     data = Column(Text)
     timestamp = Column(DateTime, default=datetime.now())
