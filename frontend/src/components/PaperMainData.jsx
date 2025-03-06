@@ -25,7 +25,7 @@ const PaperMainData = (props) => {
       <div className="font-medium w-full text-center p-1 bg-sky-100 text-sky-700 rounded-t-lg">Данные о бумаге</div>
       <div className="text-sm bg-white p-4 rounded-b-lg">
         {mainData && (
-          <ul>
+          <ul className="space-y-1">
             {Object.keys(mainData)
               .filter((key) => mainData[key])
               .map((key) => {
@@ -37,7 +37,8 @@ const PaperMainData = (props) => {
                 }
                 return (
                   <li key={key}>
-                    <span className="font-semibold">{paperMainLabels[key] || key}:</span> {displayValue}
+                    <span className="font-semibold py-0.5 px-1 mr-1">{paperMainLabels[key] || key}:</span>
+                    {displayValue}
                   </li>
                 );
               })}

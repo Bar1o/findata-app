@@ -64,6 +64,7 @@ export const FetchKeyRate = async (period) => {
 export const FetchPaperData = async (path, ticker) => {
   try {
     const response = await fetch(`${path}${ticker}`);
+    console.log(`${path}${ticker}`);
     if (!response.ok) {
       throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
     }
