@@ -1,10 +1,10 @@
 import React from "react";
 import { useState } from "react";
 
-export const FetchDataByPeriod = async ({ figi, period }) => {
+export const FetchDataByPeriod = async ({ ticker, period }) => {
   // period is D, W, M, Y
   try {
-    const response = await fetch(`/api/index_ichimoku/${figi}/${period}`);
+    const response = await fetch(`/api/index_ichimoku/${ticker}/${period}`);
     if (!response.ok) {
       throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
     }

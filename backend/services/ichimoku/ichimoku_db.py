@@ -23,13 +23,13 @@ def get_cache_validity(period: str) -> timedelta:
 
 
 class IchimokuDbManager(BaseModel):
-    figi: str
+    ticker: str
     period: str
 
     def get_cache(self):
         session = SessionLocal()
         try:
-            cache_entry = session.query(IchimokuIndexCache).filter_by(figi=self.figi, period=self.period).first()
+            cache_entry = session.query(IchimokuIndexCache).filter_by(ticker=self.ticker, period=self.period).first()
             if cache_entry:
                 time_diff = datetime.now() - cache_entry.timestamp
                 validity = get_cache_validity(self.period)
@@ -43,7 +43,7 @@ class IchimokuDbManager(BaseModel):
         session = SessionLocal()
         try:
             json_data = json.dumps(data)
-            cache_entry = IchimokuIndexCache(figi=self.figi, period=self.period, data=json_data, timestamp=datetime.now())
+            cache_entry = IchimokuIndexCache(ticker=self.ticker, period=self.period, data=json_data, timestamp=datetime.now())
             session.merge(cache_entry)
             session.commit()
         except Exception as e:
@@ -53,7 +53,7 @@ class IchimokuDbManager(BaseModel):
 
     def update_cache(self):
         # Uses the API class to fetch and recalc data and saves it into the db
-        api_client = IchimokuApi(figi=self.figi, period=self.period)
+        api_client = IchimokuApi(ticker=self.ticker, period=self.period)
         df = api_client.get_all_candles_by_period()
         data = api_client.export_nan(df)
         self.save_cache(data)

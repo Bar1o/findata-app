@@ -3,10 +3,17 @@ import { FetchPaperData } from "./FetchData";
 import { sectorsLabels, companyNames } from "../assets/paperData";
 
 const Sectors = (props) => {
-  const { ticker } = props;
+  const { ticker, onTickerSelect } = props;
   const [mainData, setMainData] = useState(null);
   const [currentSector, setCurrentSector] = useState(null);
   const [sectorTickers, setSectorTickers] = useState([]);
+
+  const handleTickerClick = (selectedTicker) => {
+    // вызывает функцию из родительского компонента
+    if (onTickerSelect) {
+      onTickerSelect(selectedTicker);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,7 +53,10 @@ const Sectors = (props) => {
           <ul className="space-y-2">
             {sectorTickers.map((tickerItem) => (
               <li key={tickerItem} className="flex items-center">
-                <button className="bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-medium py-0.5 px-2 rounded mr-2">
+                <button
+                  onClick={() => handleTickerClick(tickerItem)}
+                  className="bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-medium py-0.5 px-2 rounded mr-2"
+                >
                   {tickerItem}
                 </button>
                 <span className="text-gray-700">{companyNames[tickerItem] || ""}</span>

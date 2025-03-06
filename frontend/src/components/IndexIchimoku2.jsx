@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { createChart } from "lightweight-charts";
 import { FetchDataByPeriod, IchimokuData } from "./FetchData";
 
-const IndexIchimoku2 = ({ figi, data }) => {
+const IndexIchimoku2 = ({ ticker, data }) => {
   const chartContainerRef = useRef(null);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ const IndexIchimoku2 = ({ figi, data }) => {
       if (!data || data.length === 0) {
         const defaultPeriod = "W";
         try {
-          const rawData = await FetchDataByPeriod({ figi, period: defaultPeriod });
+          const rawData = await FetchDataByPeriod({ ticker, period: defaultPeriod });
           const ichimokuData = IchimokuData(rawData);
           setChartData(ichimokuData);
         } catch (error) {
@@ -49,7 +49,7 @@ const IndexIchimoku2 = ({ figi, data }) => {
       }
     };
     fetchData();
-  }, [data, figi]);
+  }, [data, ticker]);
 
   ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -196,7 +196,7 @@ const IndexIchimoku2 = ({ figi, data }) => {
 
   return (
     <div>
-      <h2>Ichimoku Index for {figi}</h2>
+      <h2>Ichimoku Index for {ticker}</h2>
       <div>{loading && <p>Loading...</p>}</div>
       <div ref={chartContainerRef} />
     </div>
