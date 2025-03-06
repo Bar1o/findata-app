@@ -33,20 +33,22 @@ const Multiplicators = (props) => {
       <div className="" key={group}>
         <div className="text-sm w-full text-center p-0.5 bg-sky-50 text-gray-800">{groupHeaders[group]}</div>
         <div className="bg-white p-4 rounded-b-lg">
-          <ul className="">
+          <ul className="space-y-1">
             {metricsInGroup.map((key) => {
               const metric = mainData[key];
               let displayValue;
 
               if (key === "ex_dividend_date") {
                 displayValue = formatDate(metric.value);
+              } else if (["average_daily_volume_last_10_days", "average_daily_volume_last_4_weeks"].includes(key)) {
+                displayValue = `${formatValue(metric.value)}${metric.unit ? " " + metric.unit : ""}`;
               } else {
                 displayValue = `${metric.value}${metric.unit ? " " + metric.unit : ""}`;
               }
 
               return (
                 <li key={key} className="text-sm">
-                  <span className="font-semibold">{multiplicatorsLabels[key] || key}:</span> {displayValue}
+                  <span className="font-semibold py-0.5 px-1">{multiplicatorsLabels[key] || key}:</span> {displayValue}
                 </li>
               );
             })}

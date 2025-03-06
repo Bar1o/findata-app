@@ -24,7 +24,7 @@ const DividendsData = (props) => {
       <div className="font-medium w-full text-center p-1 bg-sky-100 text-sky-700 rounded-t-lg">Дивиденды</div>
       <div className="text-sm bg-white p-4 rounded-b-lg">
         {mainData && (
-          <ul>
+          <ul className="space-y-1">
             {Object.keys(mainData)
               .filter((key) => {
                 return (
@@ -57,7 +57,8 @@ const DividendsData = (props) => {
                 }
                 return (
                   <li key={key}>
-                    <span className="font-semibold">{divsLabels[key] || key}:</span> {displayValue}
+                    <span className="font-semibold py-0.5 px-1 mr-1">{divsLabels[key] || key}:</span>
+                    {displayValue}
                   </li>
                 );
               })}

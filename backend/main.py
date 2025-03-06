@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
 
+from services.paper_data.total_tickers import tech, retail, banks, build, oil
 from services.multiplicators.multiplicators_db import MultiplicatorsDBManager
 from services.dividends.dividends_db import DividendsDBManager
 from services.paper_data.paper_data_db import PaperDataDBManager
@@ -75,6 +76,13 @@ async def get_multiplicators_data(ticker: str) -> dict:
         return {"multiplicators": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/sectors/", response_model=dict)
+async def get_sectors() -> dict:
+    result = {"tech": tech, "retail": retail, "banks": banks, "build": build, "oil": oil}
+
+    return {"sectors": result}
 
 
 app.add_middleware(

@@ -100,3 +100,46 @@ export const groupHeaders = {
   debt: "Долг и ликвидность",
   growth: "Рост",
 };
+
+export const sectorsLabels = {
+  tech: "Технологии и IT",
+  retail: "Розничная торговля",
+  banks: "Банки и финансы",
+  build: "Строительство и девелопмент",
+  oil: "Нефть и газ",
+};
+
+export const companyNames = {
+  // tech
+  YDEX: "Яндекс",
+  HEAD: "HeadHunter",
+  VKCO: "VK",
+  ASTR: "АстраЛинукс",
+
+  // retail
+  MGNT: "Магнит",
+  OZON: "Озон",
+  LENT: "Лента",
+  X5: "X5 Retail Group",
+  OKEY: "О'Кей",
+
+  // banks
+  SBER: "Сбер",
+  TCS: "T-банк",
+  SVCB: "Совкомбанк",
+  VTBR: "ВТБ",
+  CBOM: "МКБ",
+
+  // build
+  SMLT: "Самолет",
+  PIKK: "ПИК",
+  LSRG: "ЛСР",
+  MSTT: "Мостотрест",
+
+  // oil
+  GAZP: "Газпром",
+  ROSN: "Роснефть",
+  LKOH: "Лукойл",
+  NVTK: "НОВАТЭК",
+  TATN: "Татнефть",
+};

@@ -1,7 +1,21 @@
-export const formatValue = (value) => {
-  if (typeof value === "number") {
-    return new Intl.NumberFormat("ru-RU").format(value);
+export const formatValue = (value, decimals = 2) => {
+  if (value === null || value === undefined || value === "") {
+    return "";
   }
+
+  const numValue = typeof value === "string" ? parseFloat(value) : value;
+
+  if (!isNaN(numValue)) {
+    // Форматирование по ru-RU даёт разделитель тысяч как пробел, а десятичный знак - запятая.
+    // Заменяем запятую на точку.
+    return new Intl.NumberFormat("ru-RU", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: decimals,
+    })
+      .format(numValue)
+      .replace(",", ".");
+  }
+
   return value;
 };
 
