@@ -63,6 +63,7 @@ export const multiplicatorsLabels = {
   pe_ratio_ttm: "P/E",
   price_to_sales_ttm: "P/S",
   price_to_book_ttm: "P/B",
+  price_to_book_value_ttm: "P/BV",
   total_enterprise_value_mrq: "Стоимость предприятия (EV)",
   ev_to_ebitda_mrq: "EV/EBITDA",
   roe: "ROE",
@@ -125,7 +126,7 @@ export const companyNames = {
 
   // banks
   SBER: "Сбер",
-  TCS: "T-банк",
+  T: "T-банк",
   SVCB: "Совкомбанк",
   VTBR: "ВТБ",
   CBOM: "МКБ",

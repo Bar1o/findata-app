@@ -89,10 +89,17 @@
   },
   {
     "uid": "",
-    "name": "Акции обыкновенные ПАО Новатэк",
+    "name": "Новатэк",
     "figi": "BBG004S684U4",
     "ticker": "NVTK",
     "class_code": "TQBR",
     "isin": "US67000T1045"
+  },
+  {
+    "uid": "",
+    "name": "Т-Банк",
+    "figi": "TCS80A107UL4",
+    "ticker": "T",
+    "isin": "RU000A107UL4"
   }
 ]

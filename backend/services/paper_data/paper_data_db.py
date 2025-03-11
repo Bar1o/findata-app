@@ -3,22 +3,21 @@ import pathlib
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import json
+import logging
 
-from models.db_model import SessionLocal, PaperDataCache, AssetsTable
+from models.db_model import SessionLocal, PaperDataCache
 from .paper_data import PaperData
-import pandas as pd
+from .ticker_table_db import TickerTableDBManager
+
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class PaperDataDBManager(BaseModel):
     """
-    This class manages storing and updating the cache for PaperData.
-    It handles both the main data (by ticker) and the assets table.
-    It:
-    - Checks if the asset table (from get_assets_table()) has been saved.
-    - Loads stored data into PaperData.main_data.
-    - Uses export_main_data_json_by_ticker() to generate JSON data.
-    - Updates the stored cache if the record is older than 3 months.
-    - Clears outdated records.
+    This class manages storing and updating the cache for PaperData().get_main_data_on_share_by_uid() func.
+    It handles only the main data (returns by ticker).
     """
 
     cache_duration: timedelta = timedelta(days=90)  # 3 months
@@ -31,7 +30,6 @@ class PaperDataDBManager(BaseModel):
         try:
             cache = session.query(PaperDataCache).filter(PaperDataCache.ticker == ticker).first()
             if cache:
-                # Check if cache is not older than 3 months.
                 if datetime.now() - cache.timestamp < self.cache_duration:
                     return json.loads(cache.data)
             return None
@@ -51,18 +49,20 @@ class PaperDataDBManager(BaseModel):
     def update_cache(self, ticker: str) -> dict:
         """
         Updates the cache if not available or outdated.
-        Uses PaperData.export_main_data_json_by_ticker() to get fresh data.
         """
         self.clear_outdated_cache()
 
         cached_data = self.get_cache(ticker)
+        logger.debug(f"cached_data is None:{cached_data is None}")
         if cached_data is not None:
             return cached_data
 
-        # no valid cache exists => fetch new data.
+        # no valid cache exists => fetch new data
         paper_data_instance = PaperData()
-        new_data = paper_data_instance.export_main_data_json_by_ticker(ticker)
+        uid = TickerTableDBManager().get_uid_by_ticker(ticker)
+        new_data: dict = paper_data_instance.get_main_data_on_share_by_uid(uid)
         self.save_cache(ticker, new_data)
+        logger.debug(f"get new_data")
         return new_data
 
     def clear_outdated_cache(self) -> None:
@@ -70,105 +70,7 @@ class PaperDataDBManager(BaseModel):
         try:
             outdated_time = datetime.now() - self.cache_duration
             session.query(PaperDataCache).filter(PaperDataCache.timestamp < outdated_time).delete()
+            logger.info("cleared cache")
             session.commit()
         finally:
             session.close()
-
-    ################################## logic for external use ###############
-    def load_securities_from_json(self) -> pd.DataFrame:
-        """Load securities data from the JSON file as a DataFrame"""
-        json_file_path = str(pathlib.Path(__file__).parent / "securities.json")
-
-        if not os.path.exists(json_file_path):
-            return pd.DataFrame()
-
-        try:
-            with open(json_file_path, "r") as f:
-                securities = json.load(f)
-                return pd.DataFrame(securities)
-        except (json.JSONDecodeError, FileNotFoundError) as e:
-            print(f"Error loading securities.json: {e}")
-            return pd.DataFrame()
-
-    def check_assets_table(self) -> list[dict]:
-        """
-        EXTERNAL USE. Returns the assets info from DB.
-
-        Work logic:
-        Checks if the asset table (from PaperData.get_assets_table()) is stored in the DB.
-        If not, fetches the asset data, saves each row into the AssetsTable and returns the data.
-        Returns a list of dicts with columns ['uid', 'name', 'figi', 'ticker', 'class_code'].
-
-        Work logic:
-        1. Gets assets data from the database
-        2. Reads additional data from securities.json
-        3. Combines both datasets and returns a DataFrame
-        4. Doesn't store securities.json data in the database
-        """
-
-        session = self.get_session()
-
-        try:
-            stored_assets = session.query(AssetsTable).all()
-            if not stored_assets:
-                paper_data_instance = PaperData()
-                assets_df = paper_data_instance.get_assets_table()
-
-                for _, row in assets_df.iterrows():
-                    asset = AssetsTable(
-                        uid=row["uid"],
-                        name=row["name"],
-                        figi=row["figi"],
-                        ticker=row["ticker"],
-                        class_code=row["class_code"],
-                    )
-                    session.add(asset)
-                session.commit()
-
-                db_data = assets_df
-
-            elif stored_assets:
-                db_data = pd.DataFrame(
-                    [
-                        {
-                            "uid": asset.uid,
-                            "name": asset.name,
-                            "figi": asset.figi,
-                            "ticker": asset.ticker,
-                            "class_code": asset.class_code,
-                        }
-                        for asset in stored_assets
-                    ]
-                )
-
-            securities_df = self.load_securities_from_json()
-
-            if securities_df.empty:
-                return db_data
-
-            combined_df = pd.concat([db_data, securities_df], ignore_index=True)
-            combined_df = combined_df.drop_duplicates(subset=["uid"], keep="last")
-
-            return combined_df
-        finally:
-            session.close()
-
-    def get_figi_by_ticker(self, ticker: str) -> str:
-        assets_data = self.check_assets_table()
-        return assets_data.loc[assets_data["ticker"] == ticker]["figi"][0]
-
-    def get_uid_by_ticker(self, ticker: str) -> str | None:
-        """only for tickers in api_tickers"""
-        assets_data = self.check_assets_table()
-        matching_rows = assets_data.loc[assets_data["ticker"] == ticker]
-        if matching_rows.empty:
-            return None
-        return matching_rows["uid"].iloc[0]
-
-    def get_ticker_by_uid(self, uid: str) -> str | None:
-        """only for tickers in api_tickers"""
-        assets_data = self.check_assets_table()
-        matching_rows = assets_data.loc[assets_data["uid"] == uid]
-        if matching_rows.empty:
-            return None
-        return matching_rows["ticker"].iloc[0]

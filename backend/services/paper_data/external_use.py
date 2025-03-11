@@ -8,5 +8,9 @@ db_manager = PaperDataDBManager()
 # print(assets_data.columns)
 # print(assets_data[["ticker", "name", "figi"]])
 
-print(db_manager.get_uid_by_ticker("SBER"))
-print(db_manager.get_ticker_by_uid("40d89385-a03a-4659-bf4e-d3ecba011782"))
+# print(db_manager.get_uid_by_ticker("SBER"))
+# print(db_manager.get_ticker_by_uid("40d89385-a03a-4659-bf4e-d3ecba011782"))
+# print(db_manager.load_securities_from_json())
+# print(db_manager.check_assets_table())
+
+print(db_manager.update_cache("T"))

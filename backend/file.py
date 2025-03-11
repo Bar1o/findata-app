@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 def main():
     """Example - How to get figi by name of ticker."""
 
-    ticker = "EUR/USD"  # "BRH3" "SBER" "VTBR" "YDEX"
+    ticker = "T"  # "BRH3" "SBER" "VTBR" "YDEX"
 
     with Client(TOKEN) as client:
         instruments: InstrumentsService = client.instruments

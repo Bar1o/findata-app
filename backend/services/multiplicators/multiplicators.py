@@ -4,31 +4,33 @@ from typing import List, Dict, Any
 
 from tinkoff.invest import Client
 from tinkoff.invest.schemas import GetAssetFundamentalsRequest
-from ..paper_data.paper_data_db import PaperDataDBManager
-from ..paper_data.total_tickers import api_tickers
-import json
+from ..paper_data.ticker_table_db import TickerTableDBManager
+from ..paper_data.total_tickers import all_tickers
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 TOKEN = os.environ["INVEST_TOKEN"]
 
 
 # сделать импорт таблицы со всеми figi-uid
-db_manager = PaperDataDBManager()
+db_manager = TickerTableDBManager()
 
 
 # взять uid по figi для каждого ticker из api_tickers используя assets_data
 # тем самым получив list of assets и через этот list делать запрос в get_multiplicator_data_by_figi
 
 
-def get_asset_uids(tickers: List[str] = api_tickers) -> List[str]:
+def get_asset_uids(tickers: List[str] = all_tickers) -> List[str]:
     """
-    Get UIDs for the specified tickers (api_tickers) using assets_data
+    Get UIDs for tickers (api_tickers) using assets_data
     """
     uids = []
     for ticker in tickers:
-        # Find the row for this ticker in assets_data
         uid = db_manager.get_uid_by_ticker(ticker)
-        if uid:  # Skip empty UIDs
-            uids.append(uid)
+        uids.append(uid)
+    logger.debug(f"get asset_uids")
     return uids
 
 
@@ -98,10 +100,6 @@ def convert_api_data(api_data: dict) -> dict:
 
 def get_multiplicator_data_from_api():
     """
-    Works only for tickers in api_tickers
-    (=> 9 без тинька — его нет; щас вроде
-    уже T-Технологии отдельно торгуются)
-
     Fetches the fundamentals for all assets in the list (obtained via get_asset_uids)
     and returns a dictionary with the ticker as key and the corresponding data as value.
     """
@@ -114,7 +112,6 @@ def get_multiplicator_data_from_api():
             assets=get_asset_uids()
         )
         response = client.instruments.get_asset_fundamentals(request=request)
-
         for res in response.fundamentals:
             ticker = db_manager.get_ticker_by_uid(res.asset_uid)
             mult_res[ticker] = {
@@ -149,19 +146,16 @@ def get_multiplicator_data_from_api():
                 "ev_to_sales": res.ev_to_sales,
                 "ex_dividend_date": res.ex_dividend_date,
             }
-
+            logger.debug(f"mult_res:{mult_res}")
             conv_multip_res[ticker] = convert_api_data(mult_res[ticker])
-
+    logger.debug(f"conv_multip_res:{conv_multip_res}")
     return conv_multip_res
 
 
 def get_divs_from_multiplicator_data_from_api(ticker: str) -> dict:
     """
-    используется в dividends.py для дополения данных о дивидендах тех тикеров,
-    которые есть в списке api_tickers
+    используется в dividends.py для дополения данных о дивидендах тех тикеров
     """
-    if ticker not in api_tickers:
-        return dict()
 
     divs_res = {}
     conv_divs_res = {}
@@ -184,7 +178,7 @@ def get_divs_from_multiplicator_data_from_api(ticker: str) -> dict:
     return conv_divs_res
 
 
-# print(json.dumps(get_divs_from_multiplicator_data_from_api("SBER"), default=str, indent=2, ensure_ascii=False))
+# print(json.dumps(get_divs_from_multiplicator_data_from_api("TCSG"), default=str, indent=2, ensure_ascii=False))
 
 # data = {
 #     "multiplicators": {
