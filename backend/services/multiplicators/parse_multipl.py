@@ -38,6 +38,7 @@ def parse_financial_data(ticker: str, target_year: int = datetime.now().year):
         "pe_ratio_ttm": None,
         "price_to_sales_ttm": None,
         "price_to_book_ttm": None,
+        "price_to_book_value_ttm": None,
         "total_enterprise_value_mrq": None,
         "ev_to_ebitda_mrq": None,
         "roe": None,
@@ -96,7 +97,8 @@ def parse_financial_data(ticker: str, target_year: int = datetime.now().year):
         "eps": ("eps_ttm", "руб"),
         "p_e": ("pe_ratio_ttm", ""),
         "p_s": ("price_to_sales_ttm", ""),
-        "p_bv": ("price_to_book_ttm", ""),
+        "p_bv": ("price_to_book_value_ttm", ""),
+        "p_b": ("price_to_book_ttm", ""),
         "ev": ("total_enterprise_value_mrq", "млрд руб"),
         "ev_ebitda": ("ev_to_ebitda_mrq", ""),
         "roe": ("roe", "%"),
@@ -140,4 +142,4 @@ def parse_financial_data(ticker: str, target_year: int = datetime.now().year):
 
 # print(json.dumps(get_parsed_financial_data(), default=str, indent=2))
 
-# print(parse_financial_data("LKOH"))
+# print(parse_financial_data("T"))

@@ -9,14 +9,14 @@ import logging
 from pandas import DataFrame
 from pydantic import BaseModel, Field, PrivateAttr
 
-from ..paper_data.paper_data_db import PaperDataDBManager
+from ..paper_data.ticker_table_db import TickerTableDBManager
 from models.models import Quotation, factor, Window, Candle, convert_quotation
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 load_dotenv()
 
-db_manager = PaperDataDBManager()
+db_manager = TickerTableDBManager()
 
 TOKEN = os.environ["INVEST_TOKEN"]
 

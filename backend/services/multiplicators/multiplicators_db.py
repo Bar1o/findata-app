@@ -4,8 +4,12 @@ import json
 
 from models.db_model import SessionLocal, MultiplicatorsCache
 from services.multiplicators.multiplicators import get_multiplicator_data_from_api
-from ..paper_data.total_tickers import missing_tickers, api_tickers
+from ..paper_data.total_tickers import missing_tickers, api_tickers, all_tickers
 from .parse_multipl import parse_financial_data
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class MultiplicatorsDBManager(BaseModel):
@@ -54,14 +58,12 @@ class MultiplicatorsDBManager(BaseModel):
         self.clear_outdated_cache()
 
         cached_data = self.get_cache(ticker)
+        logger.debug(f"cached data is None:{cached_data is None}")
         if cached_data is not None:
             return cached_data
 
-        if ticker in missing_tickers:
-            new_data = parse_financial_data(ticker)
-        elif ticker in api_tickers:
-            all_data = get_multiplicator_data_from_api()
-            new_data = all_data.get(ticker, {})
+        all_data = get_multiplicator_data_from_api()
+        new_data = all_data.get(ticker, {})
 
         self.save_cache(ticker, new_data)
         return new_data

@@ -53,7 +53,7 @@ class DividendsDBManager(BaseModel):
         if cached_data is not None:
             return cached_data
 
-        new_data = get_extended_dividend_data_by_ticker(ticker=ticker)  # Update this function name if needed
+        new_data = get_extended_dividend_data_by_ticker(ticker=ticker)
         self.save_cache(ticker, new_data)
         return new_data
 
@@ -65,3 +65,7 @@ class DividendsDBManager(BaseModel):
             session.commit()
         finally:
             session.close()
+
+
+# db = DividendsDBManager()
+# print(db.update_cache("T"))

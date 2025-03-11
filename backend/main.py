@@ -3,8 +3,8 @@
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
 import uvicorn
+import json
 
 from services.paper_data.total_tickers import tech, retail, banks, build, oil
 from services.multiplicators.multiplicators_db import MultiplicatorsDBManager
@@ -53,7 +53,7 @@ async def get_paper_main_data(ticker: str) -> dict:
     try:
         db_manager = PaperDataDBManager()
         data = db_manager.update_cache(ticker)
-        return data  # returns {"mainData": {...}}
+        return {"mainData": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -73,6 +73,8 @@ async def get_multiplicators_data(ticker: str) -> dict:
     try:
         db_manager = MultiplicatorsDBManager()
         data = db_manager.update_cache(ticker)
+        logger.debug(f"{data}")
+        logger.debug(f"{type(data)}")
         return {"multiplicators": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

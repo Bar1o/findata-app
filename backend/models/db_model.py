@@ -51,13 +51,11 @@ class PaperDataCache(Base):
     timestamp = Column(DateTime, default=datetime.now, nullable=False)
 
 
-class AssetsTable(Base):
-    __tablename__ = "assets_table"
-    uid = Column(String, primary_key=True, index=True)
-    name = Column(String)
-    figi = Column(String)
-    ticker = Column(String, unique=True, index=True)
-    class_code = Column(String)
+class TickerTable(Base):
+    __tablename__ = "uid_figi_ticker_table"
+    ticker = Column(String, primary_key=True)
+    data = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.now, nullable=False)
 
 
 class DividendsCache(Base):

@@ -8,13 +8,13 @@ import json
 from dotenv import load_dotenv
 
 from models.models import Quotation, convert_quotation
-from ..paper_data.paper_data_db import PaperDataDBManager
+from ..paper_data.ticker_table_db import TickerTableDBManager
 from ..multiplicators.multiplicators import get_divs_from_multiplicator_data_from_api
 
 load_dotenv()
 TOKEN = os.environ["INVEST_TOKEN"]
 
-db_manager = PaperDataDBManager()
+db_manager = TickerTableDBManager()
 
 
 def get_dividend_data_by_ticker(ticker: str) -> dict:
@@ -103,5 +103,5 @@ def get_extended_dividend_data_by_ticker(ticker: str) -> dict:
 # print(get_extended_dividend_data_by_ticker("SBER"))
 # print(json.dumps(get_extended_dividend_data_by_ticker("SBER"), default=str, indent=2, ensure_ascii=False))
 
-# dividend_data = get_dividend_data_by_figi("TCS00A107T19")
-# print(json.dumps(dividend_data, default=str))
+# dividend_data = get_dividend_data_by_ticker("T")
+# print(json.dumps(dividend_data, default=str, indent=2))
