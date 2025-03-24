@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
-import { FetchGdpImoexData } from "./FetchData";
+import { FetchData } from "./FetchData";
 
 const GdpData = () => {
   const chartContainerRef = useRef(null);
@@ -23,7 +23,7 @@ const GdpData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const paperData = await FetchGdpImoexData("/api/gdp/");
+        const paperData = await FetchData("/api/gdp/");
         console.log("fetched GdpImoexData", paperData);
         setData(paperData);
       } catch (error) {

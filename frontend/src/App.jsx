@@ -6,20 +6,26 @@ import { Button } from "@gravity-ui/uikit";
 import CompaniesPage from "./components/CompaniesPage";
 import GdpData from "./components/GdpData";
 import GdpSectors from "./components/GdpSectors";
+import InflData from "./components/InflData";
 
 function App() {
-  // TODO: далее фиги на каждой странице свой
   const [onCompPage, setOnCompPage] = useState(true);
+  const [showInflation, setShowInflation] = useState(false);
 
   return (
     <div className="flex flex-col p-4 max-w-[1200px] mx-auto w-full">
       <section className="min-h-screen flex flex-col">
-        <Header />
+        <Header onToggleInflation={() => setShowInflation((prev) => !prev)} />
 
-        {/* <button onClick={() => setOnCompPage(true)}>{onCompPage ? <HomePage /> : ""}</button> */}
-        <div className="flex gap-4 mb-4">
-          <Button onClick={() => setOnCompPage(true)}>Компании</Button>
-          <Button onClick={() => setOnCompPage(false)}>ВВП</Button>
+        {showInflation && <InflData />}
+
+        <div className="flex gap-4 mb-4 justify-center">
+          <Button size="m" onClick={() => setOnCompPage(true)}>
+            Компании
+          </Button>
+          <Button size="m" onClick={() => setOnCompPage(false)}>
+            ВВП
+          </Button>
         </div>
 
         {onCompPage ? (
@@ -34,7 +40,6 @@ function App() {
       <div className="flex items-center justify-center gap-4">
         <p className="font-light text-grey-400 text-sm">
           Credits on <span className="text-blue-400">@vabarnis</span>
-          {/* add a link here */}
         </p>
       </div>
       <footer></footer>

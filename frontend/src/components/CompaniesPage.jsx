@@ -30,7 +30,7 @@ const CompaniesPage = (props) => {
             key={comp}
             selected={activeComp === comp}
             // view="outlined-info"
-            size="l"
+            size="m"
             width="small"
             onClick={() => handleClickedComp(comp)}
           >

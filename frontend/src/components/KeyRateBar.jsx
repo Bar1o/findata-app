@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { Button, Label } from "@gravity-ui/uikit";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Label } from "@gravity-ui/uikit";
 import { FetchKeyRate } from "./FetchData";
 
-const KeyRateBar = (props) => {
+const KeyRateBar = ({ onToggleInflation }) => {
   const defaultPeriod = "D";
   const [kr, setKr] = useState("");
 
@@ -18,11 +17,17 @@ const KeyRateBar = (props) => {
       }
     };
     fetchData();
-  }, [props]);
+  }, []);
 
   return (
     <div className="w-full gap-2 flex flex-row">
-      <Label className="p-3 rounded-lg" theme="normal" size="xs" value={kr ? `${kr}%` : "Loading..."}>
+      <Label
+        onClick={onToggleInflation}
+        className="p-3 rounded-lg cursor-pointer"
+        theme="normal"
+        size="xs"
+        value={kr ? `${kr}%` : "Loading..."}
+      >
         Ставка ЦБ
       </Label>
 

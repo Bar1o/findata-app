@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createChart } from "lightweight-charts";
-import { FetchGdpImoexData } from "./FetchData";
+import { FetchData } from "./FetchData";
 
 const GdpSectors = () => {
   const chartContainerRef = useRef(null);
@@ -46,7 +46,7 @@ const GdpSectors = () => {
         //    "retail": [{ "year": 2013, "value": ...}, ...],
         //    "tech": [{ "year": 2013, "value": ...}, ...],
         // }
-        const sectorsData = await FetchGdpImoexData("/api/gdp_sectors/");
+        const sectorsData = await FetchData("/api/gdp_sectors/");
         console.log("fetched GdpSectors", sectorsData);
         setData(sectorsData);
       } catch (error) {

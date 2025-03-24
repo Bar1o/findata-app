@@ -77,7 +77,7 @@ export const FetchPaperData = async (path, ticker) => {
   }
 };
 
-export const FetchGdpImoexData = async (path) => {
+export const FetchData = async (path) => {
   try {
     const response = await fetch(`${path}`);
     console.log(`${path}`);
@@ -85,7 +85,7 @@ export const FetchGdpImoexData = async (path) => {
       throw new Error(`Error fetching data: ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
-    console.log("main data", data);
+    console.log("the data fetched", data);
     return data;
   } catch (err) {
     console.error(err);
