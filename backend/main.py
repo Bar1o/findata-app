@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import json
 
-from services.paper_data.total_tickers import tech, retail, banks, build, oil
+from gdp import GdpData, ImoexData
+from services.paper_data.total_tickers import tech, retail, banks, build, oil, sectors
 from services.multiplicators.multiplicators_db import MultiplicatorsDBManager
 from services.dividends.dividends_db import DividendsDBManager
 from services.paper_data.paper_data_db import PaperDataDBManager
@@ -85,6 +86,59 @@ async def get_sectors() -> dict:
     result = {"tech": tech, "retail": retail, "banks": banks, "build": build, "oil": oil}
 
     return {"sectors": result}
+
+
+@app.get("/api/gdp/", response_model=dict)
+async def get_gdp_data() -> dict:
+    """
+    Ключ "gdp" – массив объектов:
+    { "year": число, "value": число }
+
+    Ключ "imoex" – массив объектов:
+    { "year": число, "close": число }
+    """
+
+    gdp = GdpData()
+    imoex = ImoexData()
+
+    res = {"gdp": gdp.get_total_gdp(2013)["gdp"], "imoex": imoex.get_imoex_data()["imoex"]}
+
+    return res
+    # return {
+    #     "gdp": [
+    #         {"year": 2020, "value": 107658.131030},
+    #         {"year": 2021, "value": 134727.467400},
+    #         {"year": 2022, "value": 156940.985903},
+    #     ],
+    #     "imoex": [
+    #         {"year": 2020, "close": 3289.020020},
+    #         {"year": 2021, "close": 3787.260010},
+    #         {"year": 2022, "close": 2154.120117},
+    #     ],
+    # }
+
+
+@app.get("/api/gdp_sectors/", response_model=dict)
+async def get_gdp_sectors() -> dict:
+    """
+    Ключи — названия отраслей экономики (секторов)
+    {
+    "oil": [
+        {"year": 2013, "value": 100.947872},
+        {"year": 2014, "value": 101.853883},
+        ...
+    ],
+    "build": [
+        {"year": 2013, "value": 98.72644},
+        {"year": 2014, "value": 97.32804},
+        ...
+    ]
+    }
+    """
+
+    gdp = GdpData()
+    data = gdp.get_sectors_gdp()
+    return data
 
 
 app.add_middleware(
