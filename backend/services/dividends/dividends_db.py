@@ -1,3 +1,4 @@
+# python -m services.dividends.dividends_db
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import json
@@ -68,4 +69,4 @@ class DividendsDBManager(BaseModel):
 
 
 # db = DividendsDBManager()
-# print(db.update_cache("T"))
+# print(db.update_cache("OZON"))

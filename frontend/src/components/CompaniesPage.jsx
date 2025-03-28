@@ -42,7 +42,7 @@ const CompaniesPage = ({ ticker }) => {
         </div>
         <div className="w-full md:w-1/3">
           <SharePrice ticker={activeComp} />
-          <DividendsData figi={activeComp} />
+          <DividendsData ticker={activeComp} />
         </div>
         <div className="w-full md:w-1/3">
           <Multiplicators ticker={activeComp} />
