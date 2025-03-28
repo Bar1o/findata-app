@@ -9,7 +9,6 @@ import InflData from "./components/InflData";
 import QuestionsAndAnswers from "./components/QuestionsAndAnswers";
 
 function App() {
-  // Список доступных тикеров (можно вынести отдельно или получать с сервера)
   const availableTickers = [
     "SBER",
     "VTBR",
@@ -38,8 +37,8 @@ function App() {
   const [currentTicker, setCurrentTicker] = useState("SBER");
   const [onCompPage, setOnCompPage] = useState(true);
   const [showInflation, setShowInflation] = useState(false);
+  const [isTickerPaused, setIsTickerPaused] = useState(false);
 
-  // Обработчик поиска
   const handleSearch = () => {
     const input = prompt("Введите тикер:");
     if (!input) return;
@@ -51,10 +50,19 @@ function App() {
     }
   };
 
+  const toggleTicker = () => {
+    setIsTickerPaused((prev) => !prev);
+  };
+
   return (
     <div className="flex flex-col p-4 max-w-[1200px] mx-auto w-full">
       <section className="min-h-screen flex flex-col">
-        <Header onToggleInflation={() => setShowInflation((prev) => !prev)} onSearch={handleSearch} />
+        <Header
+          onToggleInflation={() => setShowInflation((prev) => !prev)}
+          onSearch={handleSearch}
+          isTickerPaused={isTickerPaused}
+          onToggleTicker={toggleTicker}
+        />
 
         {showInflation && <InflData />}
 
@@ -68,7 +76,7 @@ function App() {
         </div>
 
         {onCompPage ? (
-          <CompaniesPage ticker={currentTicker} />
+          <CompaniesPage ticker={currentTicker} availableTickers={availableTickers} isTickerPaused={isTickerPaused} />
         ) : (
           <>
             <GdpSectors />
