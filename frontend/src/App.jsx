@@ -6,6 +6,7 @@ import CompaniesPage from "./components/CompaniesPage";
 import GdpData from "./components/GdpData";
 import GdpSectors from "./components/GdpSectors";
 import InflData from "./components/InflData";
+import QuestionsAndAnswers from "./components/QuestionsAndAnswers";
 
 function App() {
   // Список доступных тикеров (можно вынести отдельно или получать с сервера)
@@ -72,6 +73,7 @@ function App() {
           <>
             <GdpSectors />
             <GdpData />
+            <QuestionsAndAnswers />
           </>
         )}
       </section>
