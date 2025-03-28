@@ -72,6 +72,17 @@ class MultiplicatorsCache(Base):
     timestamp = Column(DateTime, default=datetime.now, nullable=False)
 
 
+class CurrencyRates(Base):
+    __tablename__ = "currency_rates"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    # Храним дату в формате "DD/MM/YYYY"
+    date = Column(String, unique=True)
+    usd = Column(Float)
+    eur = Column(Float)
+    cny = Column(Float)
+    last_updated = Column(DateTime, default=datetime.now())
+
+
 DATABASE_URL = "sqlite:///./db/database.db"
 
 engine = create_engine(DATABASE_URL)
