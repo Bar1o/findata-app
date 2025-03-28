@@ -1,6 +1,8 @@
+# python -m parse_pe
 import json
 from bs4 import BeautifulSoup
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 import logging
 from typing import Dict, List, Optional, Any
@@ -113,30 +115,34 @@ class ParsePE(BaseModel):
             logger.error(f"Error fetching P/E data for {ticker}: {e}")
             return {"year": [], "P/E": [], "year_change": []}
 
-    def parse_pe_by_sector(self, sector: str):
+    def parse_pe_by_sector(self, sector: str) -> dict:
         """
-        Get P/E data for all tickers in a specified sector.
+        Параллельно собирает P/E данные для всех тикеров сектора.
         """
         sector = sector.lower()
-
         if sector not in self.sector_tickers:
-            raise ValueError(f"Invalid sector: {sector}. Choose from: tech, retail, banks, build, oil")
+            raise ValueError(f"Invalid sector: {sector}. Choose from: {list(self.sector_tickers.keys())}")
 
         tickers = self.sector_tickers[sector]
         logger.info(f"Fetching P/E data for {len(tickers)} tickers in {sector} sector")
 
-        result = {}
-        for ticker in tickers:
-            logger.info(f"Processing ticker {ticker} for sector {sector}")
-            pe_data = self.parse_pe_by_ticker(ticker)
+        results = {}
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_ticker = {executor.submit(self.parse_pe_by_ticker, ticker): ticker for ticker in tickers}
+            for future in as_completed(future_to_ticker):
+                ticker = future_to_ticker[future]
+                try:
+                    pe_data = future.result()
+                    # Добавляем тикер, если данные содержат хотя бы один год с данными
+                    if pe_data["year"] and any(pe_data["P/E"]):
+                        results[ticker] = pe_data
+                    else:
+                        logger.warning(f"No valid P/E data for {ticker}")
+                except Exception as e:
+                    logger.error(f"Error parsing {ticker}: {e}")
 
-            # Only include tickers with actual data
-            if pe_data["year"] and any(pe_data["P/E"]):
-                result[ticker] = pe_data
-            else:
-                logger.warning(f"No P/E data found for {ticker}")
-
-        self.sector_tickers_pe[sector] = result
+        self.sector_tickers_pe[sector] = results
+        return results
 
     def get_pe_by_sector(self, sector: str):
         data = self.sector_tickers_pe.get(sector)
@@ -205,3 +211,7 @@ class ParsePE(BaseModel):
                 mean_changes.append(None)
 
         return {"year": final_years, "P/E": mean_pe, "year_change": mean_changes}
+
+
+parser = ParsePE()
+print(parser.mean_pe_by_sector("banks"))
