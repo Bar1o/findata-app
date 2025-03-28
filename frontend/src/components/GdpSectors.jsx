@@ -189,7 +189,7 @@ const GdpSectors = () => {
 
   return (
     <div style={{ position: "relative" }}>
-      <h2>Динамика отраслей ВВП (в % к предыдущему году)</h2>
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Динамика отраслей ВВП (в % к предыдущему году)</h2>
       {!data ? <p>Загрузка данных...</p> : <div ref={chartContainerRef} style={{ position: "relative", width: "100%" }} />}
     </div>
   );

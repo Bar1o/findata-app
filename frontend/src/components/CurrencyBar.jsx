@@ -32,7 +32,7 @@ const CurrencyBar = () => {
   return (
     <div className="flex flex-row gap-2">
       {Object.entries(data).map(([currency, value]) => (
-        <div>
+        <div key={currency}>
           <Currency key={currency} label={currency} value={value} />
         </div>
       ))}

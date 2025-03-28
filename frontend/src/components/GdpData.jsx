@@ -101,7 +101,7 @@ const GdpData = () => {
 
   return (
     <div style={{ position: "relative" }}>
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Сравнение ВВП и индекса Мосбиржи</h2>
+      <h2 className="text-xl font-bold text-gray-800 my-4">Сравнение ВВП и индекса Мосбиржи</h2>
       {!data ? <p>Загрузка данных...</p> : <div ref={chartContainerRef} className="relative w-full" />}
     </div>
   );

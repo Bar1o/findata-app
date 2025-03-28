@@ -1,4 +1,3 @@
-// filepath: [CompaniesPage.jsx](http://_vscodecontentref_/0)
 import React, { useEffect, useState } from "react";
 import { Button } from "@gravity-ui/uikit";
 import PaperMainData from "./PaperMainData";
@@ -9,12 +8,13 @@ import PeriodButtons from "./PeriodButtons";
 import IndexIchimoku2 from "./IndexIchimoku2";
 import SharePrice from "./SharePrice";
 import CustomLabel from "./CustomLabel";
+import AllTickers from "./AllTickers";
 
-const CompaniesPage = ({ ticker }) => {
+const CompaniesPage = ({ ticker, availableTickers, isTickerPaused }) => {
   const companies = ["SBER", "GAZP", "HEAD", "OZON", "PIKK"];
   const [activeComp, setActiveComp] = useState(ticker);
-  const [period, setPeriod] = useState("W"); // состояние периода
-  const [showLines, setShowLines] = useState(true); // состояние для показа линий
+  const [period, setPeriod] = useState("W");
+  const [showLines, setShowLines] = useState(true);
 
   useEffect(() => {
     setActiveComp(ticker);
@@ -26,15 +26,8 @@ const CompaniesPage = ({ ticker }) => {
 
   return (
     <>
-      <div className="text-sm flex flex-row gap-4">
-        {companies.map((comp) => (
-          <Button key={comp} selected={activeComp === comp} size="m" width="small" onClick={() => handleClickedComp(comp)}>
-            {comp}
-          </Button>
-        ))}
-      </div>
+      <AllTickers tickerList={availableTickers} onSelectTicker={setActiveComp} isPaused={isTickerPaused} />
 
-      {/* Передаём выбранный период и состояние showLines в IndexIchimoku2 */}
       <IndexIchimoku2 ticker={activeComp} period={period} showLines={showLines} />
 
       <div className="flex flex-row justify-between items-center p-2 sm:gap-4 md:gap-5">
