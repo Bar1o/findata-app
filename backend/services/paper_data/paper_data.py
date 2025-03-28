@@ -93,5 +93,7 @@ class PaperData(BaseModel):
             return final
 
 
-data = PaperData()
-print(PaperData().get_main_data_on_share_by_uid("4393bdb6-9017-466e-a3bb-ddb55d24159f"))
+# data = PaperData()
+# print(PaperData().get_main_data_on_share_by_uid("4393bdb6-9017-466e-a3bb-ddb55d24159f"))
+# print(data.get_uid_ticker_figi_data_by_ticker("MOEX"))
+# print(data.get_main_data_on_share_by_uid("d68f33b3-76d9-423b-a656-b2580cb0c9f2"))

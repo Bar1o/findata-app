@@ -7,7 +7,8 @@ import uvicorn
 import json
 import asyncio
 
-from services.share_price_ws import get_realtime_quote
+from services.imoex_change import get_imoex_quote
+from services.share_price import get_realtime_quote
 from services.paper_data.ticker_table_db import TickerTableDBManager
 from services.cbr_currency import Currency
 from gdp import GdpData, ImoexData
@@ -158,6 +159,23 @@ async def websocket_share_price(ticker: str) -> dict:
     data = get_realtime_quote(figi)
     logger.debug(f"Ticker {ticker} c FIGI {figi}, data: {data}")
     return data
+
+
+@app.get("/api/imoex_change/", response_model=dict)
+async def get_imoex_data() -> dict:
+    """
+    Возвращает текущую котировку IMOEX:
+      {
+         "price": число,
+         "abs_change": число,
+         "percent_change": число
+      }
+    """
+    try:
+        data = get_imoex_quote()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 app.add_middleware(
