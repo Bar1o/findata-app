@@ -6,8 +6,8 @@ const InflationTable = ({ data = [] }) => {
 
   return (
     <div className="text-sm p-1">
-      <div className="bg-white overflow-hidden rounded-lg">
-        <table className="w-full border-collapse">
+      <div className="bg-white/50 bg-white overflow-hidden rounded-lg max-w-md shadow-sm">
+        <table className="table-auto border-collapse">
           <thead className="bg-sky-100 text-sky-700">
             <tr>
               <th className="font-semibold p-2 text-center">Дата</th>
@@ -56,7 +56,7 @@ const InflData = () => {
     <div>
       <h2>Ключевая ставка Банка России и инфляция</h2>
       <InflationTable data={data.inflTable || []} />
-      <div className="w-full text-right text-sm text-gray-400 pb-1">Ставка ЦБ указана на последний день месяца</div>
+      <div className="w-full text-left text-sm text-gray-400 pb-1">Ставка ЦБ указана на последний день месяца</div>
     </div>
   );
 };

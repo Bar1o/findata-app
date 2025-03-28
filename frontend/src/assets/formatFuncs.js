@@ -26,3 +26,11 @@ export const formatDate = (dateStr) => {
   const year = date.getFullYear();
   return `${day}.${month}.${year}`;
 };
+
+export const formatValueFixed = (value, decimals = 2) => {
+  if (value === null || value === undefined || value === "") {
+    return "";
+  }
+  const numValue = typeof value === "string" ? parseFloat(value) : value;
+  return isNaN(numValue) ? value : numValue.toFixed(decimals);
+};
