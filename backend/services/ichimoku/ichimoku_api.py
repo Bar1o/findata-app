@@ -30,8 +30,8 @@ timedelta_type = {
 }
 
 interval_type = {
-    "D": CandleInterval.CANDLE_INTERVAL_HOUR,
-    "3D": CandleInterval.CANDLE_INTERVAL_HOUR,
+    "D": CandleInterval.CANDLE_INTERVAL_10_MIN,
+    "3D": CandleInterval.CANDLE_INTERVAL_30_MIN,
     "W": CandleInterval.CANDLE_INTERVAL_HOUR,
     "M": CandleInterval.CANDLE_INTERVAL_4_HOUR,
     "3M": CandleInterval.CANDLE_INTERVAL_DAY,

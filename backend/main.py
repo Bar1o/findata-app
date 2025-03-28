@@ -1,5 +1,3 @@
-# uvicorn main:app --host 0.0.0.0 --port 3300 --reload --log-level debug
-# uvicorn main:app --host 0.0.0.0 --port 3300
 import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import run_in_threadpool
@@ -26,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 db_manager = TickerTableDBManager()  # ticker-figi-uid table
 
-
 app = FastAPI()
 
 
@@ -46,15 +43,16 @@ async def get_all_candles_for_ichimoku_by_period(ticker: str, period: str) -> di
 @app.get("/api/key_rate/{period}", response_model=dict)
 async def get_key_rate(period: str) -> dict:
     logger.debug(f"Fetching keyRate for period: {period}")
-
-    return KeyRate(period=period).get_key_rate()
+    result = await run_in_threadpool(lambda: KeyRate(period=period).get_key_rate())
+    return result
 
 
 @app.get("/api/inflation_table/", response_model=dict)
 async def get_inflation_table() -> dict:
     logger.debug("Fetching infl. table")
     # запускаем синхронную функцию в пуле потоков
-    return await run_in_threadpool(fetch_inflation_table)
+    result = await run_in_threadpool(fetch_inflation_table)
+    return result
 
 
 @app.get("/api/paper_main_data/{ticker}", response_model=dict)
@@ -62,7 +60,7 @@ async def get_paper_main_data(ticker: str) -> dict:
     logger.debug("Fetching main data on paper")
     try:
         db_manager = PaperDataDBManager()
-        data = db_manager.update_cache(ticker)
+        data = await run_in_threadpool(db_manager.update_cache, ticker)
         return {"mainData": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -72,7 +70,7 @@ async def get_paper_main_data(ticker: str) -> dict:
 async def get_dividends(ticker: str) -> dict:
     try:
         db_manager = DividendsDBManager()
-        data = db_manager.update_cache(ticker)
+        data = await run_in_threadpool(db_manager.update_cache, ticker)
         return {"dividends": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -82,7 +80,7 @@ async def get_dividends(ticker: str) -> dict:
 async def get_multiplicators_data(ticker: str) -> dict:
     try:
         db_manager = MultiplicatorsDBManager()
-        data = db_manager.update_cache(ticker)
+        data = await run_in_threadpool(db_manager.update_cache, ticker)
         logger.debug(f"{data}")
         logger.debug(f"{type(data)}")
         return {"multiplicators": data}
@@ -93,7 +91,6 @@ async def get_multiplicators_data(ticker: str) -> dict:
 @app.get("/api/sectors/", response_model=dict)
 async def get_sectors() -> dict:
     result = {"tech": tech, "retail": retail, "banks": banks, "build": build, "oil": oil}
-
     return {"sectors": result}
 
 
@@ -102,47 +99,33 @@ async def get_gdp_data() -> dict:
     """
     Ключ "gdp" – массив объектов:
     { "year": число, "value": число }
-
     Ключ "imoex" – массив объектов:
     { "year": число, "close": число }
     """
 
-    gdp = GdpData()
-    imoex = ImoexData()
+    def get_data():
+        gdp = GdpData()
+        imoex = ImoexData()
+        return {"gdp": gdp.get_total_gdp(2013)["gdp"], "imoex": imoex.get_imoex_data()["imoex"]}
 
-    res = {"gdp": gdp.get_total_gdp(2013)["gdp"], "imoex": imoex.get_imoex_data()["imoex"]}
-
-    return res
+    result = await run_in_threadpool(get_data)
+    return result
 
 
 @app.get("/api/gdp_sectors/", response_model=dict)
 async def get_gdp_sectors() -> dict:
-    """
-    Ключи — названия отраслей экономики (секторов)
-    {"oil": [
-        {"year": 2013, "value": 100.947872},
-        ...
-    ],
-    "build": [
-        {"year": 2013, "value": 98.72644},
-        ...
-    ]}
-    """
-    gdp = GdpData()
-    data = gdp.get_sectors_gdp()
-    return data
+    def get_data():
+        gdp = GdpData()
+        return gdp.get_sectors_gdp()
+
+    result = await run_in_threadpool(get_data)
+    return result
 
 
 @app.get("/api/currency/", response_model=dict)
 async def get_currency() -> dict:
-    """Возвращает данные в формате для трех валют:
-    {
-      "USD": 100.01,
-      "EUR": 123.34,
-      "CNY": 12.4,
-      }
-    """
-    return Currency().get_data_on_currency()
+    result = await run_in_threadpool(lambda: Currency().get_data_on_currency())
+    return result
 
 
 @app.get("/api/share_price/{ticker}", response_model=dict)
@@ -158,7 +141,7 @@ async def websocket_share_price(ticker: str) -> dict:
     figi: str = db_manager.get_figi_by_ticker(ticker)
     if not figi:
         raise HTTPException(status_code=404, detail="Ticker not found")
-    data = get_realtime_quote(figi)
+    data = await run_in_threadpool(get_realtime_quote, figi)
     logger.debug(f"Ticker {ticker} c FIGI {figi}, data: {data}")
     return data
 
@@ -167,14 +150,14 @@ async def websocket_share_price(ticker: str) -> dict:
 async def get_imoex_data() -> dict:
     """
     Возвращает текущую котировку IMOEX:
-      {
+    {
          "price": число,
          "abs_change": число,
          "percent_change": число
-      }
+    }
     """
     try:
-        data = get_imoex_quote()
+        data = await run_in_threadpool(get_imoex_quote)
         return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -191,3 +174,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=3300, reload=True, log_level="debug")

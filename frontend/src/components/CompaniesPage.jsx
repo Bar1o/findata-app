@@ -1,3 +1,4 @@
+// filepath: [CompaniesPage.jsx](http://_vscodecontentref_/0)
 import React, { useEffect, useState } from "react";
 import { Button } from "@gravity-ui/uikit";
 import PaperMainData from "./PaperMainData";
@@ -7,13 +8,14 @@ import Sectors from "./Sectors";
 import PeriodButtons from "./PeriodButtons";
 import IndexIchimoku2 from "./IndexIchimoku2";
 import SharePrice from "./SharePrice";
+import CustomLabel from "./CustomLabel";
 
 const CompaniesPage = ({ ticker }) => {
   const companies = ["SBER", "GAZP", "HEAD", "OZON", "PIKK"];
-  // Используем единое состояние для выбранного тикера
   const [activeComp, setActiveComp] = useState(ticker);
+  const [period, setPeriod] = useState("W"); // состояние периода
+  const [showLines, setShowLines] = useState(true); // состояние для показа линий
 
-  // При изменении тикера (например, через поиск) синхронизируем
   useEffect(() => {
     setActiveComp(ticker);
   }, [ticker]);
@@ -32,8 +34,15 @@ const CompaniesPage = ({ ticker }) => {
         ))}
       </div>
 
-      <IndexIchimoku2 ticker={activeComp} data={[]} />
-      <PeriodButtons ticker={activeComp} setChartData={() => {}} />
+      {/* Передаём выбранный период и состояние showLines в IndexIchimoku2 */}
+      <IndexIchimoku2 ticker={activeComp} period={period} showLines={showLines} />
+
+      <div className="flex flex-row justify-between items-center p-2 sm:gap-4 md:gap-5">
+        <PeriodButtons period={period} setPeriod={setPeriod} />
+        <CustomLabel onClick={() => setShowLines(!showLines)} className="cursor-pointer">
+          {showLines ? "Убрать маркеры" : "Показать маркеры"}
+        </CustomLabel>
+      </div>
 
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full mb-2 md:mb-4">
         <div className="flex flex-col gap-3 w-full md:w-1/3">
