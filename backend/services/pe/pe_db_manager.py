@@ -1,4 +1,3 @@
-# filepath: [pe_db_manager.py](http://_vscodecontentref_/0)
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import json
@@ -6,7 +5,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from models.db_model import SessionLocal, PECache, SectorPECache
-from services.parse_pe import ParsePE
+from .parse_pe import ParsePE
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -24,6 +23,12 @@ class PeDBManager(BaseModel):
     def get_session(self):
         return SessionLocal()
 
+    def _rename_pe_field(self, data: dict) -> dict:
+        # Если данные содержат ключ "P/E", заменяем его на "p_e"
+        if data and "P/E" in data:
+            data["p_e"] = data.pop("P/E")
+        return data
+
     def get_company_pe(self, ticker: str) -> dict | None:
         """
         Получить P/E данных компании по тикеру.
@@ -35,9 +40,9 @@ class PeDBManager(BaseModel):
             if record:
                 age = datetime.now() - record.timestamp
                 if age < self.cache_duration:
-                    return json.loads(record.data)
+                    result = json.loads(record.data)
+                    return self._rename_pe_field(result)
                 else:
-                    # данные устарели – обновляем
                     return self.update_company_pe(ticker)
             else:
                 return self.update_company_pe(ticker)
@@ -57,7 +62,8 @@ class PeDBManager(BaseModel):
             if record:
                 age = datetime.now() - record.timestamp
                 if age < self.cache_duration:
-                    return json.loads(record.data)
+                    result = json.loads(record.data)
+                    return self._rename_pe_field(result)
                 else:
                     return self.update_sector_pe(sector)
             else:
@@ -70,6 +76,7 @@ class PeDBManager(BaseModel):
         Обновить данные P/E компании, используя метод парсинга.
         """
         pe_data = self.parser.parse_pe_by_ticker(ticker)
+        pe_data = self._rename_pe_field(pe_data)
         self.save_company_pe(ticker, pe_data)
         return pe_data
 
@@ -91,7 +98,7 @@ class PeDBManager(BaseModel):
                 ticker = future_to_ticker[future]
                 try:
                     data = future.result()
-                    if data and "P/E" in data:
+                    if data and "p_e" in data:
                         results[ticker] = data
                 except Exception as e:
                     logger.error(f"Ошибка получения P/E для {ticker}: {e}")
@@ -101,24 +108,28 @@ class PeDBManager(BaseModel):
             return {}
 
         summed = None
-        count = 0
+        counts = None
+        # Для каждого тикера суммируем значения и считаем кол-во валидных значений по каждому году отдельно
         for data in results.values():
-            pe_values = data.get("P/E")
+            pe_values = data.get("p_e")
             if pe_values:
                 if summed is None:
                     summed = [0.0] * len(pe_values)
+                    counts = [0] * len(pe_values)
                 for i, pe in enumerate(pe_values):
-                    summed[i] += pe
-                count += 1
+                    if pe is not None:
+                        summed[i] += pe
+                        counts[i] += 1
 
-        if count == 0:
+        if summed is None or all(c == 0 for c in counts):
             logger.error("Нет данных для расчёта среднего P/E.")
             return {}
 
-        mean_pe = [val / count for val in summed]
+        mean_pe = [round(s / c, 2) if c != 0 else None for s, c in zip(summed, counts)]
         sample = next(iter(results.values()))
         years = sample.get("year", [])
-        mean_data = {"year": years, "P/E": mean_pe}
+        mean_data = {"year": years, "P/E": mean_pe, "year_change": sample.get("year_change", [])}
+        mean_data = self._rename_pe_field(mean_data)
 
         self.save_sector_pe(sector_lower, mean_data)
         return mean_data

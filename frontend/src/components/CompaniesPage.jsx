@@ -9,6 +9,7 @@ import IndexIchimoku2 from "./IndexIchimoku2";
 import SharePrice from "./SharePrice";
 import CustomLabel from "./CustomLabel";
 import AllTickers from "./AllTickers";
+import PeData from "./PeData";
 
 const CompaniesPage = ({ ticker, availableTickers, isTickerPaused }) => {
   const companies = ["SBER", "GAZP", "HEAD", "OZON", "PIKK"];
@@ -45,6 +46,7 @@ const CompaniesPage = ({ ticker, availableTickers, isTickerPaused }) => {
         <div className="w-full md:w-1/3">
           <SharePrice ticker={activeComp} />
           <DividendsData ticker={activeComp} />
+          <PeData ticker={activeComp} />
         </div>
         <div className="w-full md:w-1/3">
           <Multiplicators ticker={activeComp} />

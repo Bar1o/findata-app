@@ -9,3 +9,5 @@ retail = ["MGNT", "OZON", "LENT", "X5", "OKEY"]
 banks = ["SBER", "T", "SVCB", "VTBR", "CBOM"]
 build = ["SMLT", "PIKK", "LSRG", "MSTT"]
 oil = ["GAZP", "ROSN", "LKOH", "NVTK", "TATN"]
+
+sectors_companies = {"tech": tech, "retail": retail, "banks": banks, "build": build, "oil": oil}

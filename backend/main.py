@@ -6,12 +6,13 @@ import uvicorn
 import json
 import asyncio
 
+from services.pe.pe_db_manager import PeDBManager
 from services.imoex_change import get_imoex_quote
 from services.share_price import get_realtime_quote
 from services.paper_data.ticker_table_db import TickerTableDBManager
 from services.cbr_currency import Currency
 from gdp import GdpData, ImoexData
-from services.paper_data.total_tickers import tech, retail, banks, build, oil, sectors
+from services.paper_data.total_tickers import tech, retail, banks, build, oil, sectors, sectors_companies
 from services.multiplicators.multiplicators_db import MultiplicatorsDBManager
 from services.dividends.dividends_db import DividendsDBManager
 from services.paper_data.paper_data_db import PaperDataDBManager
@@ -90,8 +91,7 @@ async def get_multiplicators_data(ticker: str) -> dict:
 
 @app.get("/api/sectors/", response_model=dict)
 async def get_sectors() -> dict:
-    result = {"tech": tech, "retail": retail, "banks": banks, "build": build, "oil": oil}
-    return {"sectors": result}
+    return {"sectors": sectors_companies}
 
 
 @app.get("/api/gdp/", response_model=dict)
@@ -161,6 +161,33 @@ async def get_imoex_data() -> dict:
         return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/pe/{ticker}", response_model=dict)
+async def get_pe_on_comp(ticker: str) -> dict:
+    """Возвращает данные вида:
+    {"company":
+        {
+        'year': [2020, 2021, 2022, 2023, 2024],
+        'p_e': [8.0, 5.28, 11.8, 4.06, 3.99],
+        'year_change': [0.18, -0.34, 1.23, -0.66, -0.02]
+        },
+    "mean": {
+            ...
+        }
+    }
+    """
+    man = PeDBManager()
+    sector = ""
+    for sec in sectors_companies:
+        if ticker in sectors_companies[sec]:
+            print(sectors_companies)
+            sector = sec
+            print(sec)
+            break
+    result = {"ticker": man.get_company_pe(ticker), "mean": man.get_sector_mean_pe(sector)}
+
+    return result
 
 
 app.add_middleware(

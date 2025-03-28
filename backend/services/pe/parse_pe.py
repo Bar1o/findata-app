@@ -213,5 +213,5 @@ class ParsePE(BaseModel):
         return {"year": final_years, "P/E": mean_pe, "year_change": mean_changes}
 
 
-parser = ParsePE()
-print(parser.mean_pe_by_sector("banks"))
+# parser = ParsePE()
+# print(parser.mean_pe_by_sector("banks"))
