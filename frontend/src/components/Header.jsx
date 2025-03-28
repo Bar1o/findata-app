@@ -3,7 +3,7 @@ import KeyRateBar from "./KeyRateBar";
 import CurrencyBar from "./CurrencyBar";
 import Imoex from "./Imoex";
 
-export default function Header({ onToggleInflation }) {
+export default function Header({ onToggleInflation, onSearch }) {
   return (
     <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-2">
       <h1 className="font-medium">
@@ -14,7 +14,7 @@ export default function Header({ onToggleInflation }) {
         <CurrencyBar />
         <Imoex />
       </div>
-      <button className="flex items-center gap-2">
+      <button className="flex items-center gap-2" onClick={onSearch}>
         <p>Поиск</p>
         <i className="fa-solid fa-magnifying-glass"></i>
       </button>

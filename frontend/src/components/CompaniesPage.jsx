@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@gravity-ui/uikit";
 import PaperMainData from "./PaperMainData";
 import DividendsData from "./DividendsData";
@@ -8,69 +8,46 @@ import PeriodButtons from "./PeriodButtons";
 import IndexIchimoku2 from "./IndexIchimoku2";
 import SharePrice from "./SharePrice";
 
-const CompaniesPage = (props) => {
+const CompaniesPage = ({ ticker }) => {
   const companies = ["SBER", "GAZP", "HEAD", "OZON", "PIKK"];
-  const [activeComp, setActiveComp] = useState("SBER");
+  // Используем единое состояние для выбранного тикера
+  const [activeComp, setActiveComp] = useState(ticker);
 
-  const [chartData, setChartData] = useState([]);
-  const [currentTicker, setCurrentTicker] = useState("SBER");
+  // При изменении тикера (например, через поиск) синхронизируем
+  useEffect(() => {
+    setActiveComp(ticker);
+  }, [ticker]);
 
-  const handleTickerChange = (newTicker) => {
-    setCurrentTicker(newTicker);
-  };
-
-  function handleClickedComp(comp) {
+  const handleClickedComp = (comp) => {
     setActiveComp(comp);
-  }
+  };
 
   return (
     <>
-      <div className="text-sm justify-center flex flex-row gap-4 sm:gap-4 md:gap-5 ">
+      <div className="text-sm flex flex-row gap-4">
         {companies.map((comp) => (
-          <Button
-            key={comp}
-            selected={activeComp === comp}
-            // view="outlined-info"
-            size="m"
-            width="small"
-            onClick={() => handleClickedComp(comp)}
-          >
+          <Button key={comp} selected={activeComp === comp} size="m" width="small" onClick={() => handleClickedComp(comp)}>
             {comp}
           </Button>
         ))}
       </div>
 
-      <IndexIchimoku2 ticker={currentTicker} data={chartData} />
-      <PeriodButtons ticker={currentTicker} setChartData={setChartData} />
+      <IndexIchimoku2 ticker={activeComp} data={[]} />
+      <PeriodButtons ticker={activeComp} setChartData={() => {}} />
 
-      {/* Стек вертикально на мобильных, горизонтально на планшетах и выше */}
       <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full mb-2 md:mb-4">
-        <div className="flex flex-col gap-3 w-full md:w-1/3 mb-2 md:mb-0">
-          <PaperMainData ticker={currentTicker} />
-          <Sectors ticker={currentTicker} onTickerSelect={handleTickerChange} />
-        </div>
-        <div className="w-full md:w-1/3 mb-2 md:mb-0">
-          <SharePrice ticker={currentTicker} />
-          <DividendsData figi={currentTicker} />
+        <div className="flex flex-col gap-3 w-full md:w-1/3">
+          <PaperMainData ticker={activeComp} />
+          <Sectors ticker={activeComp} onTickerSelect={setActiveComp} />
         </div>
         <div className="w-full md:w-1/3">
-          <Multiplicators ticker={currentTicker} />
+          <SharePrice ticker={activeComp} />
+          <DividendsData figi={activeComp} />
+        </div>
+        <div className="w-full md:w-1/3">
+          <Multiplicators ticker={activeComp} />
         </div>
       </div>
-
-      {/* Вторая группа компонентов */}
-      <div className="flex flex-row mx-auto gap-4 pt-2 w-full justify-between">
-        <PaperMainData ticker={currentTicker} />
-        <PaperMainData ticker={currentTicker} />
-      </div>
-      {/* <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full">
-          <div className="w-full md:w-1/2 mb-2 md:mb-0">
-            <PaperMainData ticker={currentTicker} />
-          </div>
-          <div className="w-full md:w-1/2">
-            <PaperMainData ticker={currentTicker} />
-          </div>
-        </div> */}
     </>
   );
 };
