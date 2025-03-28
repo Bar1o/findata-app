@@ -16,7 +16,7 @@ def main():
         request = IndicativesRequest()
         indicatives = client.instruments.indicatives(request=request)
         for instrument in indicatives.instruments:
-            print(instrument.name, instrument.ticker, instrument.figi)
+            print(instrument.name, instrument.ticker, instrument.figi, instrument.uid)
 
 
 if __name__ == "__main__":
