@@ -23,6 +23,53 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
     },
   };
 
+  // Конфигурация секторов (цвета и другие параметры берутся из GdpSectors)
+  const sectorsConfig = {
+    oil: {
+      label: "Нефтегаз",
+      color: "black",
+      priceScaleId: "left",
+    },
+    build: {
+      label: "Строительство",
+      color: "#FF8A0C",
+      priceScaleId: "left",
+    },
+    banks: {
+      label: "Банки",
+      color: "limegreen",
+      priceScaleId: "left",
+    },
+    retail: {
+      label: "Ретейл",
+      color: "#1876D2",
+      priceScaleId: "left",
+    },
+    tech: {
+      label: "Технологии",
+      color: "#FF73DE",
+      priceScaleId: "left",
+    },
+  };
+
+  // Маппинг линий Ишимоку на цвета секторов
+  const indicatorMapping = {
+    tenkanSen: sectorsConfig.oil,
+    kijunSen: sectorsConfig.build,
+    senkouSpanA: sectorsConfig.banks,
+    senkouSpanB: sectorsConfig.retail,
+    chikouSpan: sectorsConfig.tech,
+  };
+
+  // Отображаемые названия для легенды
+  const indicatorNames = {
+    tenkanSen: "Tenkan-sen",
+    kijunSen: "Kijun-sen",
+    senkouSpanA: "Senkou Span A",
+    senkouSpanB: "Senkou Span B",
+    chikouSpan: "Chikou Span",
+  };
+
   // Fetch data when ticker or period changes
   useEffect(() => {
     const fetchData = async () => {
@@ -58,10 +105,11 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
     });
     candlestickSeries.setData(chartData);
 
+    let legendDiv; // Для хранения легенды
     if (showLines) {
-      // Helper function for index lines
+      // Функция для отрисовки линий с нужными цветами и опциями
       const plotIndexes = (color, dataKey) => {
-        const lineSeries = chart.addLineSeries({ color });
+        const lineSeries = chart.addLineSeries({ color, lineWidth: 2 });
         lineSeries.setData(
           chartData
             .filter((item) => item[dataKey] !== null)
@@ -73,13 +121,12 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
         return lineSeries;
       };
 
-      plotIndexes("#FF1931", "tenkanSen");
-      plotIndexes("#2962FF", "kijunSen");
-      plotIndexes("#FFEC28", "senkouSpanA");
-      plotIndexes("#800080", "senkouSpanB");
-      plotIndexes("#008001", "chikouSpan");
+      // Рисуем линии индикаторов согласно mapping
+      Object.keys(indicatorMapping).forEach((indicatorKey) => {
+        plotIndexes(indicatorMapping[indicatorKey].color, indicatorKey);
+      });
 
-      // Пример отрисовки облака и маркеров (с сохранением предыдущей логики)
+      // Пример отрисовки облака и маркеров (оставляем логику без изменений)
       const colorsSet = {
         yellow: "#FFEC28",
         orange: "#FFA500",
@@ -160,11 +207,63 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
       });
       markers.sort((a, b) => a.time - b.time);
       candlestickSeries.setMarkers(markers);
+
+      // Добавляем легенду внизу графика с таким же стилем, как в GdpSectors и с названиями линий Ишимоку
+      const Legend = () => (
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            bottom: "10px",
+            transform: "translateX(-50%)",
+            zIndex: 2,
+            fontSize: "12px",
+            fontFamily: "sans-serif",
+            lineHeight: "18px",
+            fontWeight: "bold",
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            padding: "8px",
+            borderRadius: "4px",
+            border: "1px solid #d1d4dc",
+            display: "flex",
+            gap: "15px",
+          }}
+        >
+          {Object.keys(indicatorMapping).map((indicatorKey, index) => (
+            <div key={index} style={{ display: "flex", alignItems: "center" }}>
+              <span
+                style={{
+                  display: "inline-block",
+                  marginRight: "4px",
+                  width: "10px",
+                  height: "3px",
+                  backgroundColor: indicatorMapping[indicatorKey].color,
+                  verticalAlign: "middle",
+                  borderTop: `1px dashed ${indicatorMapping[indicatorKey].color}`,
+                }}
+              ></span>
+              <span style={{ color: indicatorMapping[indicatorKey].color }}>{indicatorNames[indicatorKey]}</span>
+            </div>
+          ))}
+        </div>
+      );
+
+      legendDiv = document.createElement("div");
+      chartContainerRef.current.appendChild(legendDiv);
+      import("react-dom").then((ReactDOM) => {
+        ReactDOM.render(<Legend />, legendDiv);
+      });
     }
 
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
+      if (legendDiv && chartContainerRef.current && chartContainerRef.current.contains(legendDiv)) {
+        import("react-dom").then((ReactDOM) => {
+          ReactDOM.unmountComponentAtNode(legendDiv);
+        });
+        chartContainerRef.current.removeChild(legendDiv);
+      }
       chart.remove();
     };
   }, [chartData, showLines]);

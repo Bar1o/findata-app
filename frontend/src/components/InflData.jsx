@@ -6,23 +6,23 @@ const InflationTable = ({ data = [] }) => {
 
   return (
     <div className="text-sm p-1">
-      <div className="bg-white/50 bg-white overflow-hidden rounded-lg max-w-md shadow-sm">
+      <div className="overflow-x-auto bg-white overflow-hidden rounded-lg max-w-md shadow-sm">
         <table className="table-auto border-collapse">
           <thead className="bg-sky-100 text-sky-700">
             <tr>
-              <th className="font-semibold p-2 text-center">Дата</th>
-              <th className="font-semibold p-2 text-center">Ключевая ставка, % годовых</th>
-              <th className="font-semibold p-2 text-center">Инфляция, % г/г</th>
-              <th className="font-semibold p-2 text-center">Цель по инфляции, %</th>
+              <th className="px-4 font-semibold p-2 text-center ">Дата</th>
+              <th className="px-4 font-semibold p-2 text-center">Ключевая ставка, % годовых</th>
+              <th className="px-4 font-semibold p-2 text-center">Инфляция, % г/г</th>
+              <th className="px-4 font-semibold p-2 text-center">Цель по инфляции, %</th>
             </tr>
           </thead>
           <tbody>
             {sortedData.map((item, index) => (
-              <tr key={index}>
-                <td className="p-2 text-center">{item.date}</td>
-                <td className="p-2 text-center">{Number(item.keyRate).toFixed(2)}</td>
-                <td className="p-2 text-center">{Number(item.infl).toFixed(2)}</td>
-                <td className="p-2 text-center">{Number(item.targetInfl).toFixed(2)}</td>
+              <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
+                <td className="px-4 p-2 text-center">{item.date}</td>
+                <td className="px-4 p-2 text-center">{Number(item.keyRate).toFixed(2)}</td>
+                <td className="px-4 p-2 text-center">{Number(item.infl).toFixed(2)}</td>
+                <td className="px-4 p-2 text-center">{Number(item.targetInfl).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>

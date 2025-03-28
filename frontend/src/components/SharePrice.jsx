@@ -43,7 +43,7 @@ const SharePrice = ({ ticker }) => {
 
   return (
     <div className="pb-3">
-      <CustomLabel className="w-full justify-center font-medium bg-slate-100 border border-slate-300">
+      <CustomLabel theme="clear" className="w-full justify-center font-medium bg-white border border-slate-300">
         <span>
           {ticker} : {quote ? `${formatValueFixed(quote.price, 2)} ₽` : "Loading..."}
         </span>

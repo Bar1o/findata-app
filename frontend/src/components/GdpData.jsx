@@ -88,6 +88,52 @@ const GdpData = () => {
     imoexSeries.setData(imoexData);
     newChart.timeScale().fitContent();
 
+    // Добавление легенды внизу графика
+    const Legend = () => (
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          bottom: "10px",
+          transform: "translateX(-50%)",
+          zIndex: 2,
+          fontSize: "12px",
+          fontFamily: "sans-serif",
+          lineHeight: "18px",
+          fontWeight: "bold",
+          backgroundColor: "rgba(255, 255, 255, 0.8)",
+          padding: "8px",
+          borderRadius: "4px",
+          border: "1px solid #d1d4dc",
+          display: "flex",
+          gap: "15px",
+        }}
+      >
+        {Object.values(seriesConfig).map((item, index) => (
+          <div key={index} style={{ display: "flex", alignItems: "center" }}>
+            <span
+              style={{
+                display: "inline-block",
+                marginRight: "4px",
+                width: "10px",
+                height: "3px",
+                backgroundColor: item.color,
+                verticalAlign: "middle",
+                borderTop: item.priceScaleId === "left" ? `1px dashed ${item.color}` : "none",
+              }}
+            ></span>
+            <span style={{ color: item.color }}>{item.label}</span>
+          </div>
+        ))}
+      </div>
+    );
+
+    const legendDiv = document.createElement("div");
+    chartContainerRef.current.appendChild(legendDiv);
+    import("react-dom").then((ReactDOM) => {
+      ReactDOM.render(<Legend />, legendDiv);
+    });
+
     const handleResize = () => {
       newChart.applyOptions({ width: chartContainerRef.current.clientWidth });
       newChart.timeScale().fitContent();
@@ -95,6 +141,12 @@ const GdpData = () => {
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
+      if (chartContainerRef.current && chartContainerRef.current.contains(legendDiv)) {
+        import("react-dom").then((ReactDOM) => {
+          ReactDOM.unmountComponentAtNode(legendDiv);
+        });
+        chartContainerRef.current.removeChild(legendDiv);
+      }
       newChart.remove();
     };
   }, [data]);
