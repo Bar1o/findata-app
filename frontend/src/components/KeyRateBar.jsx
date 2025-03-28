@@ -20,21 +20,15 @@ const KeyRateBar = ({ onToggleInflation }) => {
   }, []);
 
   return (
-    <div className="w-full gap-2 flex flex-row">
-      <Label
-        onClick={onToggleInflation}
-        className="p-3 rounded-lg cursor-pointer"
-        theme="normal"
-        size="xs"
-        value={kr ? `${kr}%` : "Loading..."}
-      >
-        Ставка ЦБ
-      </Label>
-
-      {/* <Label className="p-3 rounded-lg" theme="success" size="xs" value={"112 RUB"}>
-        EUR
-      </Label> */}
-    </div>
+    <Label
+      onClick={onToggleInflation}
+      className="px-1 py-2 rounded-lg cursor-pointer"
+      theme="normal"
+      size="xs"
+      value={kr ? `${kr}%` : "Loading..."}
+    >
+      Ставка ЦБ
+    </Label>
   );
 };
 
