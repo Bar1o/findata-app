@@ -7,6 +7,7 @@ import GdpData from "./components/GdpData";
 import GdpSectors from "./components/GdpSectors";
 import InflData from "./components/InflData";
 import QuestionsAndAnswers from "./components/QuestionsAndAnswers";
+import AllRights from "./components/AllRights";
 
 function App() {
   const availableTickers = [
@@ -85,9 +86,10 @@ function App() {
           </>
         )}
       </section>
+      <AllRights />
       <div className="flex items-center justify-center gap-4">
         <p className="font-light text-grey-400 text-sm">
-          Credits on <span className="text-blue-400">@vabarnis</span>
+          Credits on <span className="text-blue-400">@vabarnis</span>, 2025
         </p>
       </div>
       <footer></footer>
