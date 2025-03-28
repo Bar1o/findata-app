@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Label } from "@gravity-ui/uikit";
+import CustomLabel from "./CustomLabel";
 import { FetchKeyRate } from "./FetchData";
 
 const KeyRateBar = ({ onToggleInflation }) => {
@@ -20,15 +20,12 @@ const KeyRateBar = ({ onToggleInflation }) => {
   }, []);
 
   return (
-    <Label
-      onClick={onToggleInflation}
-      className="px-1 py-2 rounded-lg cursor-pointer"
-      theme="normal"
-      size="xs"
-      value={kr ? `${kr}%` : "Loading..."}
-    >
-      Ставка ЦБ
-    </Label>
+    <div>
+      <CustomLabel theme="clear" onClick={onToggleInflation}>
+        <span>Ставка ЦБ :</span>
+        <span className="ml-1">{kr ? `${kr}%` : "Loading..."}</span>
+      </CustomLabel>
+    </div>
   );
 };
 
