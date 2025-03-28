@@ -20,7 +20,7 @@ const Imoex = () => {
       }
     };
 
-    const interval = 5000; // polling interval
+    const interval = 10000; // polling interval
     fetchData();
     const intervalId = setInterval(fetchData, interval);
     return () => clearInterval(intervalId);

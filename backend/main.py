@@ -2,6 +2,7 @@
 # uvicorn main:app --host 0.0.0.0 --port 3300
 import logging
 from fastapi import FastAPI, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import json
@@ -49,10 +50,11 @@ async def get_key_rate(period: str) -> dict:
     return KeyRate(period=period).get_key_rate()
 
 
-@app.get("/api/inflation_table", response_model=dict)
+@app.get("/api/inflation_table/", response_model=dict)
 async def get_inflation_table() -> dict:
     logger.debug("Fetching infl. table")
-    return fetch_inflation_table()
+    # запускаем синхронную функцию в пуле потоков
+    return await run_in_threadpool(fetch_inflation_table)
 
 
 @app.get("/api/paper_main_data/{ticker}", response_model=dict)

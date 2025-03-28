@@ -1,3 +1,4 @@
+# python -m models.db_model
 from sqlalchemy import Column, Integer, String, Float, Text, DateTime, create_engine, Enum, UniqueConstraint
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
@@ -83,9 +84,23 @@ class CurrencyRates(Base):
     last_updated = Column(DateTime, default=datetime.now())
 
 
+class PECache(Base):
+    __tablename__ = "pe_cache"
+    ticker = Column(String, primary_key=True)
+    data = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.now, nullable=False)
+
+
+class SectorPECache(Base):
+    __tablename__ = "sector_pe_cache"
+    sector = Column(String, primary_key=True)
+    data = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.now, nullable=False)
+
+
 DATABASE_URL = "sqlite:///./db/database.db"
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base.metadata.create_all(bind=engine)
