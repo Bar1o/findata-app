@@ -5,13 +5,7 @@ import { formatValueFixed } from "../assets/formatFuncs";
 
 export const Currency = ({ label, value }) => {
   return (
-    <Label
-      title="курс ЦБ"
-      className="px-1 py-2 rounded-lg cursor-pointer"
-      theme="info"
-      size="xs"
-      value={value ? formatValueFixed(value, 2) : "Loading..."}
-    >
+    <Label title="курс ЦБ" className="px-1 py-2 rounded-lg cursor-pointer" theme="info" size="xs" value={formatValueFixed(value, 2)}>
       {label}/RUB
     </Label>
   );
@@ -33,7 +27,7 @@ const CurrencyBar = () => {
     fetchData();
   }, []);
 
-  if (!data) return <div>Loading...</div>;
+  if (!data) return <div>Загрузка...</div>;
 
   return (
     <div className="flex flex-row gap-2 flex-wrap">
