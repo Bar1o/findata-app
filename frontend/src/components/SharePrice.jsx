@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { formatValueFixed, formatValue } from "../assets/formatFuncs";
+import CustomLabel from "./CustomLabel";
 
 // Поясняющий контейнер (можно оставить CustomLabel, который просто задает отступы и скругление, без логики цвета)
-const CustomLabel = ({ children, ...props }) => {
-  const baseClass = `w-full justify-center bg-gray-200/50 inline-flex items-center px-2 py-1 rounded-lg text-sm font-medium `;
-  return (
-    <div className={baseClass} {...props}>
-      {children}
-    </div>
-  );
-};
+// const CustomLabel = ({ children, ...props }) => {
+//   const baseClass = `w-full justify-center bg-gray-200/50 inline-flex items-center px-2 py-1 rounded-lg text-sm font-medium `;
+//   return (
+//     <div className={baseClass} {...props}>
+//       {children}
+//     </div>
+//   );
+// };
 
 const SharePrice = ({ ticker }) => {
   const [quote, setQuote] = useState(null);
@@ -42,7 +43,7 @@ const SharePrice = ({ ticker }) => {
 
   return (
     <div className="pb-3">
-      <CustomLabel>
+      <CustomLabel className="w-full justify-center font-medium bg-slate-100 border border-slate-300">
         <span>
           {ticker} : {quote ? `${formatValueFixed(quote.price, 2)} ₽` : "Loading..."}
         </span>

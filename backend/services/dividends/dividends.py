@@ -21,6 +21,7 @@ def get_dividend_data_by_ticker(ticker: str) -> dict:
     """Get dividend data for 1 year from today"""
     dividend_data = []
     with Client(TOKEN) as client:
+        result = {}
         from_date = datetime.strptime((datetime.now() - timedelta(days=365)).strftime("%d-%m-%Y"), "%d-%m-%Y")
         to_date = datetime.strptime(datetime.now().strftime("%d-%m-%Y"), "%d-%m-%Y")
 
@@ -100,7 +101,7 @@ def get_extended_dividend_data_by_ticker(ticker: str) -> dict:
     return formatted_divs
 
 
-# print(get_extended_dividend_data_by_ticker("SBER"))
+# print(get_dividend_data_by_ticker("SVCB"))
 # print(json.dumps(get_extended_dividend_data_by_ticker("SBER"), default=str, indent=2, ensure_ascii=False))
 
 # dividend_data = get_dividend_data_by_ticker("T")
