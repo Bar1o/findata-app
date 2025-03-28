@@ -5,7 +5,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import json
+import asyncio
 
+from services.share_price_ws import get_realtime_quote
+from services.paper_data.ticker_table_db import TickerTableDBManager
 from services.cbr_currency import Currency
 from gdp import GdpData, ImoexData
 from services.paper_data.total_tickers import tech, retail, banks, build, oil, sectors
@@ -18,6 +21,8 @@ from services.cbr_parse_infl import fetch_inflation_table
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+db_manager = TickerTableDBManager()  # ticker-figi-uid table
 
 
 app = FastAPI()
@@ -135,6 +140,24 @@ async def get_currency() -> dict:
       }
     """
     return Currency().get_data_on_currency()
+
+
+@app.get("/api/share_price/{ticker}", response_model=dict)
+async def websocket_share_price(ticker: str) -> dict:
+    """
+    Возвращает данные текущей котировки акции.
+    {
+      "price": текущая цена (float),
+      "abs_change": абсолютное изменение (float),
+      "percent_change": изменение в процентах (float)
+    }
+    """
+    figi: str = db_manager.get_figi_by_ticker(ticker)
+    if not figi:
+        raise HTTPException(status_code=404, detail="Ticker not found")
+    data = get_realtime_quote(figi)
+    logger.debug(f"Ticker {ticker} c FIGI {figi}, data: {data}")
+    return data
 
 
 app.add_middleware(

@@ -6,6 +6,7 @@ import Multiplicators from "./Multiplicators";
 import Sectors from "./Sectors";
 import PeriodButtons from "./PeriodButtons";
 import IndexIchimoku2 from "./IndexIchimoku2";
+import SharePrice from "./SharePrice";
 
 const CompaniesPage = (props) => {
   const companies = ["SBER", "GAZP", "HEAD", "OZON", "PIKK"];
@@ -49,6 +50,7 @@ const CompaniesPage = (props) => {
           <Sectors ticker={currentTicker} onTickerSelect={handleTickerChange} />
         </div>
         <div className="w-full md:w-1/3 mb-2 md:mb-0">
+          <SharePrice ticker={currentTicker} />
           <DividendsData figi={currentTicker} />
         </div>
         <div className="w-full md:w-1/3">
