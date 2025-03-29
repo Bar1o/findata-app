@@ -70,7 +70,7 @@ class PaperData(BaseModel):
             for el in res.instruments:
                 if el.class_code == "TQBR":
                     inst = el
-            logger.debug(f"class_code is TQBR:{inst.class_code=="TQBR",inst.class_code}")
+            logger.debug(f"class_code is TQBR: {inst.class_code == 'TQBR'}, {inst.class_code}")
             final = {
                 "ticker": inst.ticker,
                 "figi": inst.figi,
