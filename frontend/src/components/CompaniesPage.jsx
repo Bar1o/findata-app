@@ -33,7 +33,7 @@ const CompaniesPage = ({ ticker, availableTickers, isTickerPaused }) => {
 
       <IndexIchimoku2 ticker={activeComp} period={period} showLines={showLines} />
 
-      <div className="flex flex-row justify-between items-center p-2 sm:gap-4 md:gap-5">
+      <div className="flex flex-row flex-wrap justify-between items-center p-2 sm:gap-4 md:gap-5">
         <PeriodButtons period={period} setPeriod={setPeriod} />
         <div className="flex flex-row gap-2">
           <CustomLabel onClick={() => setShowIchimokuInfo((prev) => !prev)} className="cursor-pointer">
