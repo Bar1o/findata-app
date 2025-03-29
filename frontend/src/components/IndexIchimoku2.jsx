@@ -270,7 +270,7 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-medium text-gray-800 mb-4">Индекс Ишимоку для {ticker}</h2>
+      <h2 className="text-xl font-medium text-gray-800 mb-4">Индикатор Ишимоку для {ticker}</h2>
       <div>{loading && <p>Загрузка...</p>}</div>
       <div ref={chartContainerRef} style={{ position: "relative" }} />
     </div>
