@@ -4,6 +4,8 @@ FROM python:3.11-slim
 # Set work directory
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y curl
+
 # Install dependencies
 COPY requirements.txt .
 RUN pip install --cache-dir=/tmp/pip_cache -r requirements.txt
