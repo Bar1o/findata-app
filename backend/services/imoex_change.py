@@ -6,7 +6,7 @@ url = "https://iss.moex.com/iss/engines/stock/markets/index/boards/SNDX/securiti
 
 def get_current_value(xml_content):
     root = ET.fromstring(xml_content)
-    # Ищем элемент data с id="marketdata" и внутри row с SECID="IMOEX"
+    # ищем элемент data с id="marketdata" и внутри row с SECID="IMOEX"
     for row in root.findall(".//data[@id='marketdata']/rows/row"):
         if row.attrib.get("SECID") == "IMOEX":
             return float(row.attrib.get("CURRENTVALUE"))

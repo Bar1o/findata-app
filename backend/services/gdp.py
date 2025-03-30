@@ -7,8 +7,8 @@ from datetime import datetime
 
 class GdpData(BaseModel):
     """
-    Extracts data from xlsx files from Rosstat.
-    Starts with 2011 year.
+    Извлекает данные из xlsx файлов Росстата.
+    Начинается с 2011 года.
     """
 
     total_gdp_curr_prices: dict = {}
@@ -101,8 +101,8 @@ class GdpData(BaseModel):
 
 class ImoexData(BaseModel):
     """
-    Gets data from API for IMOEX.
-    Starts with 2013 year.
+    Получает данные из API yfinance для IMOEX.
+    Начинается с 2013 года.
     """
 
     imoex_data: dict = {}
