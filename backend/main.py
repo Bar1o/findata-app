@@ -11,7 +11,7 @@ from services.imoex_change import get_imoex_quote
 from services.share_price import get_realtime_quote
 from services.paper_data.ticker_table_db import TickerTableDBManager
 from services.cbr_currency import Currency
-from gdp import GdpData, ImoexData
+from services.gdp import GdpData, ImoexData
 from services.paper_data.total_tickers import tech, retail, banks, build, oil, sectors, sectors_companies
 from services.multiplicators.multiplicators_db import MultiplicatorsDBManager
 from services.dividends.dividends_db import DividendsDBManager

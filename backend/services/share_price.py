@@ -41,22 +41,3 @@ def get_realtime_quote(figi: str) -> dict:
     get_realtime_quote.prev_price = current_price
 
     return {"price": round(current_price, 2), "abs_change": round(abs_change, 2), "percent_change": round(percent_change, 2)}
-
-
-# from .paper_data.ticker_table_db import TickerTableDBManager
-# db_manager = TickerTableDBManager()
-
-# figi = db_manager.get_figi_by_ticker("SBER")  # чтобы получать фиги по тикеру
-# FIGI = "BBG004730N88"
-
-# import time
-
-# while True:
-#     quote = get_realtime_quote(FIGI, TOKEN)
-#     print(
-#         f"""
-#     Текущая цена: {quote['price']} ₽
-#     Изменение: {quote['abs_change']} ₽ ({quote['percent_change']}%)
-#     """
-#     )
-#     time.sleep(5)

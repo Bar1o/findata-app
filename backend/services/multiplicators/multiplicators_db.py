@@ -13,18 +13,29 @@ logger = logging.getLogger(__name__)
 
 class MultiplicatorsDBManager(BaseModel):
     """
-    This class manages storing and updating the multiplicator data cache.
+    Класс для управления сохранением и обновлением кэша данных по мультипликаторам.
 
-    It checks whether multiplicator data (fetched via get_multiplicator_data_from_api)
-    is stored. If the stored data is older than cache_duration, it fetches and updates the cache.
+    При вызове проверяется наличие кэшированных данных по мультипликаторам (полученных
+    через метод get_multiplicator_data_from_api). Если сохранённые данные старше, чем cache_duration,
+    происходит их обновление и сохранение в БД.
     """
 
-    cache_duration: timedelta = timedelta(days=1)
+    cache_duration: timedelta = timedelta(days=90)
 
     def get_session(self):
+        """
+        Возвращает сессию для работы с базой данных.
+        """
         return SessionLocal()
 
     def get_cache(self, ticker: str) -> dict | None:
+        """
+        Получает кэшированные данные по мультипликаторам для указанного тикера.
+
+        Если найден кэш и разница между текущим временем и временем обновления кэша
+        меньше, чем cache_duration, возвращается словарь с данными.
+        Иначе возвращается None.
+        """
         session = self.get_session()
         try:
             cache = session.query(MultiplicatorsCache).filter(MultiplicatorsCache.ticker == ticker).first()
@@ -35,6 +46,11 @@ class MultiplicatorsDBManager(BaseModel):
             session.close()
 
     def save_cache(self, ticker: str, data: dict) -> None:
+        """
+        Сохраняет данные по мультипликаторам для указанного тикера в кэше.
+
+        Данные сериализуются в JSON-формате, а время обновления устанавливается равным текущему.
+        """
         session = self.get_session()
         try:
             cache = MultiplicatorsCache(ticker=ticker, data=json.dumps(data, default=str), timestamp=datetime.now())
@@ -45,10 +61,10 @@ class MultiplicatorsDBManager(BaseModel):
 
     def update_cache(self, ticker: str) -> dict:
         """
-        Returns multiplicator data for the given ticker.
-        If a valid cache exists (younger than cache_duration), it is returned.
-        Otherwise, new data is fetched either via parsing (for missing_tickers)
-        or via the external API (for api_tickers), saved, then returned.
+        Возвращает данные по мультипликаторам для заданного тикера.
+
+        Если существует действующий кэш (возраст которого меньше cache_duration),
+        он возвращается. Иначе данные запрашиваются через Multiplicators API, сохраняются и возвращаются.
         """
         self.clear_outdated_cache()
 
@@ -64,6 +80,11 @@ class MultiplicatorsDBManager(BaseModel):
         return new_data
 
     def clear_outdated_cache(self) -> None:
+        """
+        Удаляет устаревшие записи кэша из базы данных.
+
+        Записи считаются устаревшими, если их возраст превышает cache_duration.
+        """
         session = self.get_session()
         try:
             outdated_time = datetime.now() - self.cache_duration
