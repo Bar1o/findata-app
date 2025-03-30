@@ -129,7 +129,7 @@ async def get_currency() -> dict:
 
 
 @app.get("/api/share_price/{ticker}", response_model=dict)
-async def websocket_share_price(ticker: str) -> dict:
+async def get_share_price(ticker: str) -> dict:
     """
     Возвращает данные текущей котировки акции.
     {
@@ -138,11 +138,10 @@ async def websocket_share_price(ticker: str) -> dict:
       "percent_change": изменение в процентах (float)
     }
     """
-    figi: str = db_manager.get_figi_by_ticker(ticker)
-    if not figi:
+    data = await run_in_threadpool(get_realtime_quote, ticker)
+    if not data:
         raise HTTPException(status_code=404, detail="Ticker not found")
-    data = await run_in_threadpool(get_realtime_quote, figi)
-    logger.debug(f"Ticker {ticker} c FIGI {figi}, data: {data}")
+    logger.debug(f"Ticker {ticker} c ticker {ticker}, data: {data}")
     return data
 
 

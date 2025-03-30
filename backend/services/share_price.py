@@ -3,12 +3,15 @@ from tinkoff.invest.utils import quotation_to_decimal
 from dotenv import load_dotenv
 import os
 
+from services.paper_data.ticker_table_db import TickerTableDBManager
+
 
 load_dotenv()
 TOKEN = os.environ["INVEST_TOKEN"]
+db_manager = TickerTableDBManager()  # ticker-figi-uid table
 
 
-def get_realtime_quote(figi: str) -> dict:
+def get_realtime_quote(ticker: str) -> dict:
     """
     Получает текущие котировки акции и рассчитывает изменения.
 
@@ -23,6 +26,11 @@ def get_realtime_quote(figi: str) -> dict:
             'percent_change': изменение в процентах
         }
     """
+
+    figi: str = db_manager.get_figi_by_ticker(ticker)
+    if not figi:
+        return {}
+
     # кеширование предыдущей цены в атрибуте функции
     if not hasattr(get_realtime_quote, "prev_price"):
         get_realtime_quote.prev_price = None
