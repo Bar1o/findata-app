@@ -76,7 +76,7 @@ class MultiplicatorsCache(Base):
 class CurrencyRates(Base):
     __tablename__ = "currency_rates"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    # Храним дату в формате "DD/MM/YYYY"
+    # храним дату в формате "DD/MM/YYYY"
     date = Column(String, unique=True)
     usd = Column(Float)
     eur = Column(Float)

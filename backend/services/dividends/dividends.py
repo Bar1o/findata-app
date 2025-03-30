@@ -91,9 +91,9 @@ def get_extended_dividend_data_by_ticker(ticker: str) -> dict:
                     "unit": unit,
                 }
 
-    # Объединяем данные, если мультипликаторы не пустые
+    # объединение данные, если мультипликаторы не пустые
     if multip_data and isinstance(multip_data, dict):
-        # Объединяем словари, отдавая приоритет данным из API (если они есть)
+        # объединение словарей с приоритетом данных из API (если они есть)
         for key, value in multip_data.items():
             if key not in formatted_divs:
                 formatted_divs[key] = value

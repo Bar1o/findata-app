@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { createChart } from "lightweight-charts";
 import { FetchDataByPeriod, IchimokuData } from "./FetchData";
 
-const IndexIchimoku2 = ({ ticker, period, showLines }) => {
+const IndexIchimoku = ({ ticker, period, showLines }) => {
   const chartContainerRef = useRef(null);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,45 +23,14 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
     },
   };
 
-  // Конфигурация секторов (цвета и другие параметры берутся из GdpSectors)
-  const sectorsConfig = {
-    oil: {
-      label: "Нефтегаз",
-      color: "black",
-      priceScaleId: "left",
-    },
-    build: {
-      label: "Строительство",
-      color: "#FF8A0C",
-      priceScaleId: "left",
-    },
-    banks: {
-      label: "Банки",
-      color: "limegreen",
-      priceScaleId: "left",
-    },
-    retail: {
-      label: "Ретейл",
-      color: "#1876D2",
-      priceScaleId: "left",
-    },
-    tech: {
-      label: "Технологии",
-      color: "#FF73DE",
-      priceScaleId: "left",
-    },
-  };
-
-  // Маппинг линий Ишимоку на цвета секторов
   const indicatorMapping = {
-    tenkanSen: sectorsConfig.oil,
-    kijunSen: sectorsConfig.build,
-    senkouSpanA: sectorsConfig.banks,
-    senkouSpanB: sectorsConfig.retail,
-    chikouSpan: sectorsConfig.tech,
+    tenkanSen: { color: "black", priceScaleId: "left" },
+    kijunSen: { color: "#FF8A0C", priceScaleId: "left" },
+    senkouSpanA: { color: "limegreen", priceScaleId: "left" },
+    senkouSpanB: { color: "#1876D2", priceScaleId: "left" },
+    chikouSpan: { color: "#FF73DE", priceScaleId: "left" },
   };
 
-  // Отображаемые названия для легенды
   const indicatorNames = {
     tenkanSen: "Tenkan-sen",
     kijunSen: "Kijun-sen",
@@ -70,7 +39,6 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
     chikouSpan: "Chikou Span",
   };
 
-  // Fetch data when ticker or period changes
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -86,7 +54,6 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
     fetchData();
   }, [ticker, period]);
 
-  // Draw chart whenever chartData or showLines changes
   useEffect(() => {
     if (!chartContainerRef.current) return;
     const handleResize = () => {
@@ -105,9 +72,8 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
     });
     candlestickSeries.setData(chartData);
 
-    let legendDiv; // Для хранения легенды
+    let legendDiv;
     if (showLines) {
-      // Функция для отрисовки линий с нужными цветами и опциями
       const plotIndexes = (color, dataKey) => {
         const lineSeries = chart.addLineSeries({ color, lineWidth: 2 });
         lineSeries.setData(
@@ -121,7 +87,6 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
         return lineSeries;
       };
 
-      // Рисуем линии индикаторов согласно mapping
       Object.keys(indicatorMapping).forEach((indicatorKey) => {
         plotIndexes(indicatorMapping[indicatorKey].color, indicatorKey);
       });
@@ -170,7 +135,6 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
         );
       }
 
-      // Markers for buy and sell signals
       const buySignals = [];
       const sellSignals = [];
       for (let i = 1; i < chartData.length; i++) {
@@ -208,7 +172,6 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
       markers.sort((a, b) => a.time - b.time);
       candlestickSeries.setMarkers(markers);
 
-      // Добавляем легенду внизу графика с таким же стилем, как в GdpSectors и с названиями линий Ишимоку
       const Legend = () => (
         <div
           style={{
@@ -277,4 +240,4 @@ const IndexIchimoku2 = ({ ticker, period, showLines }) => {
   );
 };
 
-export default IndexIchimoku2;
+export default IndexIchimoku;

@@ -9,22 +9,33 @@ from services.dividends.dividends import get_extended_dividend_data_by_ticker
 
 class DividendsDBManager(BaseModel):
     """
-    This class manages storing and updating the dividends data cache.
+    Класс для управления сохранением и обновлением кэша данных по дивидендам.
 
-    It checks whether the dividends data (fetched via get_dividend_data()) is stored.
-    If stored data is older than one day, it fetches and updates the cache.
+    При обращении проверяет, сохранены ли данные по дивидендам для указанного тикера,
+    и если время с момента последнего обновления превышает один день, получает новые данные,
+    сохраняет их и возвращает обновлённый кэш.
     """
 
-    cache_duration: timedelta = timedelta(days=1)
+    cache_duration: timedelta = timedelta(days=90)
 
     def get_session(self):
+        """
+        Возвращает сессию для работы с базой данных.
+        """
         return SessionLocal()
 
     def get_cache(self, ticker: str) -> dict | None:
+        """
+        Получает кэшированные данные по дивидендам для указанного тикера.
+
+        Если найден кэш и разница между текущим временем и временем обновления кэша
+        меньше одного дня, возвращает данные кэша (в виде словаря).
+        Иначе возвращает None.
+        """
         session = self.get_session()
         try:
             cache = session.query(DividendsCache).filter(DividendsCache.ticker == ticker).first()
-            # сheck if found and not older than cache_duration
+            # если найден кэш и его возраст меньше cache_duration (90 дней)
             if cache and (datetime.now() - cache.timestamp) < self.cache_duration:
                 return json.loads(cache.data)
             return None
@@ -32,10 +43,15 @@ class DividendsDBManager(BaseModel):
             session.close()
 
     def save_cache(self, ticker: str, data: dict) -> None:
+        """
+        Сохраняет данные по дивидендам для указанного тикера в кэше.
+
+        Данные сериализуются в формате JSON, а также сохраняется текущее время обновления.
+        """
         session = self.get_session()
         try:
             cache = DividendsCache(
-                ticker=ticker, data=json.dumps(data, default=str), timestamp=datetime.now()  # default=str converts datetime to string
+                ticker=ticker, data=json.dumps(data, default=str), timestamp=datetime.now()  # default=str преобразует datetime в строку
             )
             session.merge(cache)
             session.commit()
@@ -44,9 +60,10 @@ class DividendsDBManager(BaseModel):
 
     def update_cache(self, ticker: str) -> dict:
         """
-        Returns dividends data for the given ticker.
-        If a valid cache exists (less than 1 day), it returns it.
-        Otherwise, it fetches new data via get_dividend_data(), saves it, then returns it.
+        Возвращает данные по дивидендам для указанного тикера.
+
+        Если кэш существует и данные обновлены менее одного дня назад, возвращает кэшированные данные.
+        Иначе вызывается функция получения новых данных, результат сохраняется в кэш и возвращается.
         """
         self.clear_outdated_cache()
 
@@ -59,6 +76,11 @@ class DividendsDBManager(BaseModel):
         return new_data
 
     def clear_outdated_cache(self) -> None:
+        """
+        Удаляет устаревшие записи кэша из базы данных.
+
+        Записи считаются устаревшими, если время их обновления более одного дня назад.
+        """
         session = self.get_session()
         try:
             outdated_time = datetime.now() - self.cache_duration

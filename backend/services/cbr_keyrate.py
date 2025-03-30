@@ -30,7 +30,7 @@ class KeyRate(BaseModel):
     def generate_periods(self) -> Dict[str, List[str]]:
         today = date.today()
         periods = {
-            "D": [today, today - relativedelta(months=1)],
+            "D": [today, today - relativedelta(days=7)],
             "M": [today, today - relativedelta(months=1)],
             "Y": [today, today - relativedelta(years=1)],
             "5Y": [today, today - relativedelta(years=5)],

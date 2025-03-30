@@ -4,7 +4,7 @@ import DividendsData from "./DividendsData";
 import Multiplicators from "./Multiplicators";
 import Sectors from "./Sectors";
 import PeriodButtons from "./PeriodButtons";
-import IndexIchimoku2 from "./IndexIchimoku2";
+import IndexIchimoku from "./IndexIchimoku";
 import SharePrice from "./SharePrice";
 import CustomLabel from "./CustomLabel";
 import AllTickers from "./AllTickers";
@@ -31,7 +31,7 @@ const CompaniesPage = ({ ticker, availableTickers, isTickerPaused }) => {
     <>
       <AllTickers tickerList={availableTickers} onSelectTicker={setActiveComp} isPaused={isTickerPaused} />
 
-      <IndexIchimoku2 ticker={activeComp} period={period} showLines={showLines} />
+      <IndexIchimoku ticker={activeComp} period={period} showLines={showLines} />
 
       <div className="flex flex-row flex-wrap justify-between items-center p-2 sm:gap-4 md:gap-5">
         <PeriodButtons period={period} setPeriod={setPeriod} />

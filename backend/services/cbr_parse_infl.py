@@ -114,9 +114,9 @@ def fetch_inflation_table():
     return {"inflTable": result_list}
 
 
-if __name__ == "__main__":
-    try:
-        inflation_data = fetch_inflation_table()
-        logger.debug(inflation_data)
-    except Exception as e:
-        logger.error(f"Error: {e}")
+# if __name__ == "__main__":
+#     try:
+#         inflation_data = fetch_inflation_table()
+#         logger.debug(inflation_data)
+#     except Exception as e:
+#         logger.error(f"Error: {e}")

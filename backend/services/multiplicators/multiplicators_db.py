@@ -5,7 +5,6 @@ import json
 from models.db_model import SessionLocal, MultiplicatorsCache
 from services.multiplicators.multiplicators import get_multiplicator_data_from_api
 from ..paper_data.total_tickers import missing_tickers, api_tickers, all_tickers
-from .parse_multipl import parse_financial_data
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -18,10 +17,6 @@ class MultiplicatorsDBManager(BaseModel):
 
     It checks whether multiplicator data (fetched via get_multiplicator_data_from_api)
     is stored. If the stored data is older than cache_duration, it fetches and updates the cache.
-
-    Updates data based on type of ticker:
-    - uses parse_financial_data() if ticker in missing_tickers
-    - uses api call if ticker in api_tickers
     """
 
     cache_duration: timedelta = timedelta(days=1)
