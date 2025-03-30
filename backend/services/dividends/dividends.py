@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from models.models import Quotation, convert_quotation
 from ..paper_data.ticker_table_db import TickerTableDBManager
-from ..multiplicators.multiplicators import get_divs_from_multiplicator_data_from_api
+from ..multiplicators.multiplicators import Multiplicators
 
 load_dotenv()
 TOKEN = os.environ["INVEST_TOKEN"]
@@ -61,7 +61,7 @@ def get_extended_dividend_data_by_ticker(ticker: str) -> dict:
     }
     """
     div_data: dict = get_dividend_data_by_ticker(ticker)
-    multip_data: dict = get_divs_from_multiplicator_data_from_api(ticker)
+    multip_data: dict = Multiplicators().get_divs_from_multiplicator_data_from_api(ticker)
 
     formatted_divs = dict()
     if div_data:

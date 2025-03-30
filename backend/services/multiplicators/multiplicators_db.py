@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import json
 
 from models.db_model import SessionLocal, MultiplicatorsCache
-from services.multiplicators.multiplicators import get_multiplicator_data_from_api
+from services.multiplicators.multiplicators import Multiplicators
 from ..paper_data.total_tickers import missing_tickers, api_tickers, all_tickers
 import logging
 
@@ -57,7 +57,7 @@ class MultiplicatorsDBManager(BaseModel):
         if cached_data is not None:
             return cached_data
 
-        all_data = get_multiplicator_data_from_api()
+        all_data = Multiplicators().get_multiplicator_data_from_api()
         new_data = all_data.get(ticker, {})
 
         self.save_cache(ticker, new_data)
