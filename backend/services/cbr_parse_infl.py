@@ -140,6 +140,6 @@ class InflTable:
         self.session.close()
 
 
-infl = InflTable()
-infl.update_data()
-print(infl.get_latest_data())
+# infl = InflTable()
+# infl.update_data()
+# print(infl.get_latest_data())
