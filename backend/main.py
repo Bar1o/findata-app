@@ -18,7 +18,7 @@ from services.dividends.dividends_db import DividendsDBManager
 from services.paper_data.paper_data_db import PaperDataDBManager
 from services.ichimoku.ichimoku_func import ichimoku_index_data
 from services.cbr_keyrate import KeyRate
-from services.cbr_parse_infl import fetch_inflation_table
+from services.cbr_parse_infl import InflTable
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -49,11 +49,18 @@ async def get_key_rate(period: str) -> dict:
 
 
 @app.get("/api/inflation_table/", response_model=dict)
+@app.get("/api/inflation_table/", response_model=dict)
 async def get_inflation_table() -> dict:
-    logger.debug("Fetching infl. table")
-    # запускаем синхронную функцию в пуле потоков
-    result = await run_in_threadpool(fetch_inflation_table)
-    return result
+    logger.debug("Fetching inflation table via InflTable class")
+    infl_table = InflTable()
+    try:
+        await run_in_threadpool(infl_table.update_data)
+        result = await run_in_threadpool(infl_table.get_latest_data)
+    except Exception as e:
+        infl_table.close()
+        raise HTTPException(status_code=500, detail=str(e))
+    infl_table.close()
+    return {"inflTable": result}
 
 
 @app.get("/api/paper_main_data/{ticker}", response_model=dict)

@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 class ParsePE(BaseModel):
     """
-    Class to parse P/E data from smart-lab.ru for tickers and sectors.
+    Класс для парсинга данных P/E с сайта smart-lab.ru для тикеров и секторов.
 
-    example:
-    sector_tickers_pe = {"tech":{
+    пример:
+    sector_tickers_pe = {"tech": {
         "SBER": {
-            "year":[2020, 2021],
+            "year": [2020, 2021],
             "P/E": [10.97, 11.11],
             "year_change": [0.75, 0.33]
         }
@@ -32,9 +32,9 @@ class ParsePE(BaseModel):
 
     def parse_pe_by_ticker(self, ticker: str) -> dict:
         """
-        Fetch and parse P/E data for a specific ticker.
+        Получает и парсит данные P/E для указанного тикера.
 
-        Returns dictionary with year, P/E values, and year-over-year changes
+        Возвращает словарь с годами, значениями P/E и годовыми изменениями.
         """
         logger.info(f"Fetching P/E data for ticker: {ticker}")
 
@@ -117,11 +117,11 @@ class ParsePE(BaseModel):
 
     def parse_pe_by_sector(self, sector: str) -> dict:
         """
-        Параллельно собирает P/E данные для всех тикеров сектора.
+        Параллельно собирает данные P/E для всех тикеров в указанном секторе.
         """
         sector = sector.lower()
         if sector not in self.sector_tickers:
-            raise ValueError(f"Invalid sector: {sector}. Choose from: {list(self.sector_tickers.keys())}")
+            raise ValueError(f"Некорректный сектор: {sector}. Выберите из: {list(self.sector_tickers.keys())}")
 
         tickers = self.sector_tickers[sector]
         logger.info(f"Fetching P/E data for {len(tickers)} tickers in {sector} sector")
@@ -145,6 +145,9 @@ class ParsePE(BaseModel):
         return results
 
     def get_pe_by_sector(self, sector: str):
+        """
+        Получает данные P/E для сектора, если они уже имеются, иначе инициирует парсинг.
+        """
         data = self.sector_tickers_pe.get(sector)
         if data:
             return data
@@ -154,9 +157,9 @@ class ParsePE(BaseModel):
 
     def mean_pe_by_sector(self, sector: str) -> dict:
         """
-        Calculate mean P/E values and year changes across a sector.
+        Вычисляет средние значения P/E и годовые изменения для указанного сектора.
 
-        Returns dictionary with mean P/E values and changes by year for the sector
+        Возвращает словарь с годами, средними значениями P/E и годовыми изменениями.
         """
         # sector_data = self.sector_tickers_pe.get(sector)
         sector_data = self.get_pe_by_sector(sector)
@@ -192,7 +195,7 @@ class ParsePE(BaseModel):
                     change_sums[year] += year_changes[i]
                     change_counts[year] += 1
 
-        # calculate means
+        # вычисление средних значений
         mean_pe = []
         mean_changes = []
         final_years = []
