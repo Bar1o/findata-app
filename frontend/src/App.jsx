@@ -8,6 +8,7 @@ import GdpSectors from "./components/GdpSectors";
 import InflData from "./components/InflData";
 import QuestionsAndAnswers from "./components/QuestionsAndAnswers";
 import AllRights from "./components/AllRights";
+import KeyRateData from "./components/KeyRateData";
 
 function App() {
   const availableTickers = [
@@ -65,7 +66,12 @@ function App() {
           onToggleTicker={toggleTicker}
         />
 
-        {showInflation && <InflData />}
+        {showInflation && (
+          <div>
+            <InflData />
+            <KeyRateData />
+          </div>
+        )}
 
         <div className="flex gap-4 mb-4 justify-center">
           <Button size="m" onClick={() => setOnCompPage(true)}>

@@ -10,10 +10,11 @@ Base = declarative_base()
 
 class PeriodEnum(enum.Enum):
     D = "D"
-    M = "M"
+    M6 = "M6"
     Y = "Y"
-    _5Y = "5Y"
-    _10Y = "10Y"
+    Y5 = "Y5"
+    Y10 = "Y10"
+    Y15 = "Y15"
 
 
 class InflationTable(Base):
