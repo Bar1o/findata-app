@@ -4,7 +4,7 @@ import CurrencyBar from "./CurrencyBar";
 import Imoex from "./Imoex";
 import { Switch } from "@gravity-ui/uikit";
 
-export default function Header({ onToggleInflation, onSearch, isTickerPaused, onToggleTicker }) {
+export default function Header({ onToggleInflation, onSearch, isTickerPaused, onToggleTicker, isCompaniesPage }) {
   return (
     <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-2">
       <h1 className="font-medium">
@@ -15,8 +15,7 @@ export default function Header({ onToggleInflation, onSearch, isTickerPaused, on
         <CurrencyBar />
         <Imoex />
       </div>
-      <Switch onChange={onToggleTicker}>{isTickerPaused ? "Запустить строку" : "Остановить строку"}</Switch>
-
+      {isCompaniesPage && <Switch onChange={onToggleTicker}>{isTickerPaused ? "Запустить строку" : "Остановить строку"}</Switch>}
       <div className="flex items-center gap-4">
         <button className="flex items-center gap-2" onClick={onSearch}>
           <p>Поиск</p>

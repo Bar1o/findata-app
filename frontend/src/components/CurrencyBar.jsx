@@ -3,16 +3,20 @@ import CustomLabel from "./CustomLabel";
 import { FetchData } from "./FetchData";
 import { formatValueFixed } from "../assets/formatFuncs";
 
+// Компонента, которая отображает "ВАЛЮТА/RUB : значение или Загрузка..."
 export const Currency = ({ label, value }) => {
   return (
     <CustomLabel theme="clear" className="border-stone-300">
-      {label}/RUB: {formatValueFixed(value, 2)}
+      {label}/RUB: {value !== undefined ? formatValueFixed(value, 2) : "Загрузка..."}
     </CustomLabel>
   );
 };
 
 const CurrencyBar = () => {
   const [data, setData] = useState(null);
+
+  // если данные ещё не загружены, используем список валют для красивого отображения загрузки
+  const defaultCurrencies = ["USD", "EUR", "CNY"];
 
   useEffect(() => {
     const fetchDataFn = async () => {
@@ -27,13 +31,14 @@ const CurrencyBar = () => {
     fetchDataFn();
   }, []);
 
-  if (!data) return <div>Загрузка...</div>;
+  // Если данные имеются, используем их ключи, иначе список по умолчанию
+  const currencyKeys = data ? Object.keys(data) : defaultCurrencies;
 
   return (
     <div className="flex flex-row gap-2">
-      {Object.entries(data).map(([currency, value]) => (
+      {currencyKeys.map((currency) => (
         <div key={currency}>
-          <Currency key={currency} label={currency} value={value} />
+          <Currency label={currency} value={data ? data[currency] : undefined} />
         </div>
       ))}
     </div>

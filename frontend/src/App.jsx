@@ -64,6 +64,7 @@ function App() {
           onSearch={handleSearch}
           isTickerPaused={isTickerPaused}
           onToggleTicker={toggleTicker}
+          isCompaniesPage={onCompPage}
         />
 
         {showInflation && (
@@ -74,10 +75,10 @@ function App() {
         )}
 
         <div className="flex gap-4 mb-4 justify-center">
-          <Button size="m" onClick={() => setOnCompPage(true)}>
+          <Button size="m" selected={onCompPage === true} onClick={() => setOnCompPage(true)}>
             Компании
           </Button>
-          <Button size="m" onClick={() => setOnCompPage(false)}>
+          <Button size="m" selected={onCompPage === false} onClick={() => setOnCompPage(false)}>
             ВВП
           </Button>
         </div>
