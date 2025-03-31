@@ -24,6 +24,8 @@ const KeyRateData = () => {
           const day = String(dt.getDate()).padStart(2, "0");
           return { time: `${year}-${month}-${day}`, value: item.rate };
         });
+        // данные надо сортировать по возрастанию времени
+        transformed.sort((a, b) => new Date(a.time) - new Date(b.time));
         setChartData(transformed);
       } catch (error) {
         console.error(`Ошибка получения keyRate для периода ${period}:`, error);
@@ -76,15 +78,8 @@ const KeyRateData = () => {
 
     if (chartData.length > 0) {
       lineSeries.setData(chartData);
-      // Масштабируем график так, чтобы он отображал все данные
       chart.timeScale().fitContent();
     }
-
-    // Создаём легенду с TailwindCSS классами
-    const legend = document.createElement("div");
-    legend.className = "absolute top-2 left-2 bg-white bg-opacity-80 px-3 py-1 border border-gray-300 rounded";
-    legend.innerHTML = `<b>Ключевая ставка (${period})</b>`;
-    chartContainerRef.current.appendChild(legend);
 
     const handleResize = () => {
       chart.applyOptions({ width: chartContainerRef.current.clientWidth });
@@ -94,9 +89,6 @@ const KeyRateData = () => {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      if (chartContainerRef.current && legend && chartContainerRef.current.contains(legend)) {
-        chartContainerRef.current.removeChild(legend);
-      }
       try {
         chart.remove();
       } catch (error) {
@@ -110,9 +102,7 @@ const KeyRateData = () => {
   return (
     <div className="w-full">
       <h2 className="font-bold text-xl mb-4 mt-2">График ключевой ставки</h2>
-      <div ref={chartContainerRef} className="relative border border-gray-300 mb-5">
-        {loading && <p className="p-4">Загрузка данных...</p>}
-      </div>
+      <div ref={chartContainerRef} className="relative border border-gray-300 mb-5" />
       <PeriodButtons period={period} setPeriod={setPeriod} periods={availablePeriods} />
     </div>
   );

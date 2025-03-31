@@ -70,7 +70,7 @@ class KeyRate(BaseModel):
             .all()
         )
         if recent_data:
-            data = [{"date": row.date, "rate": row.rate} for row in recent_data]
+            data = [{"date": row.date.isoformat(), "rate": row.rate} for row in recent_data]
             if self.period == "D":
                 data = data[0]
             db.close()
@@ -128,8 +128,9 @@ class KeyRate(BaseModel):
                     rate = kr.find("Rate").text
 
                     dt_obj = datetime.datetime.fromisoformat(dt_str)
-                    formatted_dt = int(dt_obj.timestamp())
-                    data.append({"dt": formatted_dt, "rate": float(rate)})
+                    # Добавляем дату в формате ISO
+                    formatted_date = dt_obj.isoformat()
+                    data.append({"date": formatted_date, "rate": float(rate)})
 
                     db_row = KeyRateTable(
                         period=PeriodEnum[self.period],
@@ -154,7 +155,3 @@ class KeyRate(BaseModel):
             logger.error(f"Error: Received status code {response.status_code}")
             logger.debug("Response Text: %s", response.text)
             db.close()
-
-
-# kr = KeyRate(period="M6").get_key_rate()
-# print(kr)
