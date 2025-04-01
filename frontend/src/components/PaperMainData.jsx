@@ -20,7 +20,6 @@ const PaperMainData = ({ ticker }) => {
     fetchData();
   }, [ticker]);
 
-  // Если данных ещё нет – показываем индикатор загрузки
   if (mainData === null) {
     return (
       <div className="flex-col">
@@ -32,16 +31,12 @@ const PaperMainData = ({ ticker }) => {
     );
   }
 
-  // Если данные пусты – не отображаем компонент
   if (!mainData || Object.keys(mainData).length === 0) return null;
 
-  // Список ключей для обработки дат
   const dateKeys = ["placement_date", "ipo_date", "registry_date"];
 
-  // Фильтруем ключи, чтобы для дат, если формат равен "01.01.1970" — не отображать
   const keysToDisplay = Object.keys(mainData).filter((key) => {
     if (dateKeys.includes(key)) {
-      // Если значение существует — форматируем его и сравниваем с "01.01.1970"
       return mainData[key] && formatDate(mainData[key]) !== "01.01.1970";
     }
     return mainData[key];
