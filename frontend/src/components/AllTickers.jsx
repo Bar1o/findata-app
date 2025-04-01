@@ -3,7 +3,6 @@ import CustomLabel from "./CustomLabel";
 import { Switch } from "@gravity-ui/uikit";
 
 const AllTickers = ({ tickerList, onSelectTicker, isPaused }) => {
-  // Дублируем список для бесшовного эффекта
   const repeatedTickers = [...tickerList, ...tickerList];
 
   return (

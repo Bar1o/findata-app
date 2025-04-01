@@ -39,7 +39,6 @@ const KeyRateData = () => {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Удаляем предыдущий экземпляр графика, если он существует
     if (chartRef.current) {
       try {
         chartRef.current.remove();

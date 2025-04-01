@@ -4,10 +4,8 @@ import { paperMainLabels, issueKindMapping } from "../assets/paperData";
 import { formatValue, formatDate } from "../assets/formatFuncs";
 
 const PaperMainData = ({ ticker }) => {
-  const [mainData, setMainData] = useState(null); // Данные ещё не загружены
-
+  const [mainData, setMainData] = useState(null);
   useEffect(() => {
-    // Сбрасываем данные при изменении тикера
     setMainData(null);
     const fetchData = async () => {
       try {
@@ -16,7 +14,7 @@ const PaperMainData = ({ ticker }) => {
         setMainData(paperData.mainData);
       } catch (error) {
         console.error("Can't fetch main paper data:", error);
-        setMainData({}); // Можно оставить null, если данные не пришли
+        setMainData({});
       }
     };
     fetchData();

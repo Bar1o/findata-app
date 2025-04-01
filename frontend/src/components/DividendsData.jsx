@@ -5,11 +5,9 @@ import { divsLabels, regilarityMapping } from "../assets/paperData";
 
 const DividendsData = (props) => {
   const { ticker } = props;
-  // Изначально null – означает, что данные ещё не загружены
   const [mainData, setMainData] = useState(null);
 
   useEffect(() => {
-    // При изменении тикера очищаем старые данные
     setMainData(null);
     const fetchData = async () => {
       try {

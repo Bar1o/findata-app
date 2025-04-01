@@ -3,7 +3,6 @@ import CustomLabel from "./CustomLabel";
 import { FetchData } from "./FetchData";
 import { formatValueFixed } from "../assets/formatFuncs";
 
-// Компонента, которая отображает "ВАЛЮТА/RUB : значение или Загрузка..."
 export const Currency = ({ label, value }) => {
   return (
     <CustomLabel theme="clear" className="border-stone-300">
@@ -15,7 +14,6 @@ export const Currency = ({ label, value }) => {
 const CurrencyBar = () => {
   const [data, setData] = useState(null);
 
-  // если данные ещё не загружены, используем список валют для красивого отображения загрузки
   const defaultCurrencies = ["USD", "EUR", "CNY"];
 
   useEffect(() => {

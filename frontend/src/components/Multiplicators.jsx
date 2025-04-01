@@ -5,11 +5,9 @@ import { multiplicatorsLabels, metricGroups, groupHeaders } from "../assets/pape
 
 const Multiplicators = (props) => {
   const { ticker } = props;
-  // Изначально null, чтобы отличать состояние "ещё не загружено"
   const [mainData, setMainData] = useState(null);
 
   useEffect(() => {
-    // При смене тикера очищаем старые данные
     setMainData(null);
     const fetchData = async () => {
       try {
@@ -18,13 +16,12 @@ const Multiplicators = (props) => {
         setMainData(paperData.multiplicators);
       } catch (error) {
         console.error("can't fetch Multiplicators data:", error);
-        setMainData({}); // При ошибке возвращаем пустой объект
+        setMainData({});
       }
     };
     fetchData();
   }, [ticker]);
 
-  // Пока данные не загружены – отображаем индикатор загрузки
   if (mainData === null) {
     return (
       <div className="">
@@ -39,7 +36,6 @@ const Multiplicators = (props) => {
   const renderMetricGroup = (group) => {
     if (!mainData) return null;
 
-    // Фильтруем метрики группы, где есть реальные значения
     const metricsInGroup = metricGroups[group].filter(
       (key) => mainData[key] && mainData[key].value && mainData[key].value !== "0" && mainData[key].value !== "0.00"
     );

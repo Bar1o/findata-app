@@ -1,6 +1,5 @@
 import React from "react";
 
-// Импорт примера логотипов – замените пути на актуальные пути к вашим PNG файлам
 import logoCbr from "../assets/logos/cbr.png";
 import logoSmLab from "../assets/logos/smartlab.png";
 import logoTbank from "../assets/logos/tbank.png";
@@ -19,7 +18,6 @@ const AllRights = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-row flex-wrap justify-center align-center gap-6">
           {logos.map((logo, index) => (
-            // использовать border для откладки
             <div key={index} className="w-24 h-10 flex items-center justify-center ">
               <img src={logo.src} alt={logo.alt} className="max-w-full max-h-full object-contain" />
             </div>
