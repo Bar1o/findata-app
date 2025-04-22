@@ -10,3 +10,45 @@ The work is related to the development of a web application for analyzing and as
 Web application, macroeconomic indicators, fundamental analysis, stock market, shares of Russian companies
 
 Веб-приложение, макроэкономические индикаторы, фундаментальный анализ, фондовый рынок, акции российских компаний
+
+
+## Архитектура приложения
+
+Схема работы приложения с основными технологиями
+![Схема работы приложения](graphics/total-scheme-2.png)
+
+**Инфраструктура**:
+Docker, 3 контейнера: Frontend, Backend, Nginx
+
+Nginx для балансировки нагрузки и SSL.
+
+**Frontend**: React (Vite) + Tailwind CSS (адаптивный интерфейс), Lightweight Charts
+
+**Backend**: FastAPI (асинхронная обработка запросов) + SQLite (кеширование)
+
+
+### Backend
+Полная схема работы backend для каждого источника данных. От получения данных до добавления их в БД. 
+![t-api](graphics/t-api.png)
+![moex-cb-api](graphics/moex-cb-api.png)
+![rosst-yfin-api](graphics/rosst-yfin-api.png)
+![sm-lab-api](graphics/sm-lab-api.png)
+![cbr-api](graphics/cbr-api.png)
+
+### Frontend
+Полная схема работы frontend части.
+![full-front](graphics/full-front.png)
+
+
+# Макет интерфейса
+![maket-inferface](graphics/maket-inferface.png)
+
+
+# Скриншоты
+
+Приложение поддерживает кросплатформенность, удовлетворяет стандартам современной разработки.
+
+<img src="graphics/mobile.png" alt="mobile" width="200" />
+
+
+![pc](graphics/pc.png)
