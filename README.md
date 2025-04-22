@@ -48,7 +48,7 @@ Nginx для балансировки нагрузки и SSL.
 
 Приложение поддерживает кросплатформенность, удовлетворяет стандартам современной разработки.
 
-<img src="graphics/mobile.png" alt="mobile" width="200" />
 
 
 ![pc](graphics/pc.png)
+![mobile](graphics/mobile.png)
