@@ -51,4 +51,3 @@ Nginx для балансировки нагрузки и SSL.
 
 
 ![pc](graphics/pc.png)
-![mobile](graphics/mobile.png)
